@@ -21,3 +21,4 @@ tonyg-rfc3339==0.1
 typing-extensions==4.2.0
 urllib3==1.26.9
 uvicorn[standard]==0.17.6
+pre-commit==3.6.0

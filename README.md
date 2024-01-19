@@ -1,16 +1,29 @@
-# hackathon-backend
+# command-7-backend
 
 ## Как запустить при разработке
 
 ### Перейти в рабочуюю директорию
 ```
-cd рабочая_папка/
-
+cd 7-command-backend/
 ```
 ### Активировать окружение
 ```
 . venv/Scripts/activate
 
+```
+### Установить зависимости
+```
+pip install -r requirements.txt
+
+```
+### Активировать pre-commit
+```
+pre-commit install
+
+```
+### Выполнить миграции в БД
+```
+alembic upgrade head
 ```
 ### Запустить приложение
 ```

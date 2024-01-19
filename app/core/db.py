@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, declared_attr, sessionmaker
 
@@ -14,6 +14,15 @@ class PreBase:
 
 
 Base = declarative_base(cls=PreBase)
+
+
+class BaseWithName(Base):
+    """ Родительский класс для таблиц с парой полей 'id - название'. """
+
+    __abstract__ = True
+
+    name = Column(String(length=128))
+
 
 engine = create_async_engine(settings.database_url)
 
