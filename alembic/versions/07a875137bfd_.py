@@ -1,8 +1,8 @@
-"""first migration
+"""empty message
 
-Revision ID: bd0cbd502882
+Revision ID: 07a875137bfd
 Revises:
-Create Date: 2024-01-19 12:40:11.549236
+Create Date: 2024-01-19 19:12:04.920989
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = "bd0cbd502882"
+revision = "07a875137bfd"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -27,7 +27,11 @@ def upgrade():
         sa.Column("comment", sa.Text(), nullable=True),
         sa.Column("supervisor_comment", sa.Text(), nullable=True),
         sa.Column("task_status_id", sa.Integer(), nullable=True),
-        sa.Column("file_name", sa.String(), nullable=True),
+        sa.Column("file", sa.Integer(), nullable=True),
+        sa.ForeignKeyConstraint(
+            ["file"],
+            ["taskfile.id"],
+        ),
         sa.ForeignKeyConstraint(
             ["task_status_id"],
             ["taskstatus.id"],
@@ -80,12 +84,8 @@ def upgrade():
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("task_id", sa.Integer(), nullable=True),
         sa.Column("education_id", sa.Integer(), nullable=True),
-        sa.Column("status", sa.Integer(), nullable=True),
+        sa.Column("status", sa.Boolean(), server_default=sa.text("0"), nullable=True),
         sa.ForeignKeyConstraint(["education_id"], ["education.id"], ondelete="CASCADE"),
-        sa.ForeignKeyConstraint(
-            ["status"],
-            ["status.id"],
-        ),
         sa.ForeignKeyConstraint(["task_id"], ["task.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
     )
@@ -101,7 +101,7 @@ def upgrade():
         sa.Column("mentor_id", sa.Integer(), nullable=True),
         sa.Column("description", sa.Text(), nullable=True),
         sa.Column("comment", sa.Text(), nullable=True),
-        sa.Column("ipr_status_id", sa.Integer(), nullable=True),
+        sa.Column("ipr_status_id", sa.Integer(), nullable=False),
         sa.Column("ipr_grade_id", sa.Integer(), nullable=True),
         sa.Column("supervisor_comment", sa.Text(), nullable=True),
         sa.ForeignKeyConstraint(

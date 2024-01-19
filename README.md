@@ -1,4 +1,4 @@
-# alfa-hackathon-7-backend
+# command-7-backend
 
 ## Как запустить при разработке
 

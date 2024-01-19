@@ -39,7 +39,7 @@ class Ipr(Base):
     mentor_id = Column(Integer, ForeignKey("user.id"), nullable=True)
     description = Column(Text(), nullable=True)
     comment = Column(Text(), nullable=True)
-    ipr_status_id = Column(Integer, ForeignKey("status.id"), nullable=True)
+    ipr_status_id = Column(Integer, ForeignKey("status.id"), nullable=False)
     ipr_grade_id = Column(Integer, ForeignKey("grade.id"), nullable=True)
     supervisor_comment = Column(Text(), nullable=True)
 

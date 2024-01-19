@@ -1,4 +1,13 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    false,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+)
 
 from app.core.db import Base, BaseWithName
 
@@ -17,7 +26,7 @@ class Task(BaseWithName):
     comment = Column(Text(), nullable=True)
     supervisor_comment = Column(Text(), nullable=True)
     task_status_id = Column(Integer, ForeignKey("taskstatus.id"))
-    file_name = Column(String())
+    file = Column(Integer, ForeignKey("taskfile.id"))
 
 
 class Education(BaseWithName):
@@ -29,7 +38,7 @@ class Education(BaseWithName):
 class EducationTask(Base):
     task_id = Column(Integer, ForeignKey("task.id", ondelete="CASCADE"))
     education_id = Column(Integer, ForeignKey("education.id", ondelete="CASCADE"))
-    status = Column(Integer, ForeignKey("status.id"))
+    status = Column(Boolean(), server_default=false())
 
 
 class SpecialtyEducation(Base):
