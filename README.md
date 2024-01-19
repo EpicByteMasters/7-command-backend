@@ -4,13 +4,27 @@
 
 ### Перейти в рабочуюю директорию
 ```
-cd alfa-hackathon-7-backend/
+cd 7-command-backend/
 
 ```
 ### Активировать окружение
 ```
 . venv/Scripts/activate
 
+```
+### Установить зависимости
+```
+pip install -r requirements.txt
+
+```
+### Активировать pre-commit
+```
+pre-commit install
+
+```
+### Выполнить миграции в БД
+```
+alembic upgrade head
 ```
 ### Запустить приложение
 ```
