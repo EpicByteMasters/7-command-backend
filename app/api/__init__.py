@@ -1,0 +1,1 @@
+from app.api.endpoints.ipr import router as ipr_router

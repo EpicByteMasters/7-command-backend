@@ -9,7 +9,7 @@ from app.schemas.task import TaskDB
 class IPRDraftSave(BaseModel):
     goal: Optional[str]
     specialization: Optional[str]
-    competence: List[str]
+    competency: List[str]
     createdAt: Optional[date]
     dateOfEnd: Optional[date]
     mentorId: Optional[str]
