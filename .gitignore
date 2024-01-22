@@ -7,6 +7,7 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+/alembic/versions
 .Python
 build/
 develop-eggs/
