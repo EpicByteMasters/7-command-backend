@@ -20,5 +20,5 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     position_id = Column(Integer, ForeignKey("position.id"), nullable=True)
     specialty_id = Column(Integer, ForeignKey("specialty.id"), nullable=True)
     supervisor_id = Column(Integer, ForeignKey("user.id"), nullable=True)
-    supervisor = relationship(lambda: User, remote_side=id, backref="supervisor")
+    # supervisor = relationship(lambda: User, remote_side=id, backref="supervisor")
     image_url = Column(String(), nullable=True)
