@@ -53,7 +53,7 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
     async def on_after_register(
             self, user: User, request: Optional[Request] = None
     ):
-        print(f'Пользователь {user.email} зарегистрирован.') # ИСПРАВИТЬ!!
+        print(f'Пользователь {user.email} зарегистрирован.')  # ИСПРАВИТЬ!!
 
 
 async def get_user_manager(user_db=Depends(get_user_db)):
