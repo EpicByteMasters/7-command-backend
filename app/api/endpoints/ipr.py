@@ -1,13 +1,17 @@
-from typing import Optional
+from http import HTTPStatus
 
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.core.db import get_async_session
-from app.models import Ipr, Status
 from app.schemas.ipr import IPRDraftCreate, IPRDraftSave
-from app.crud.ipr import create_ipr, delete_ipr
+from app.crud.ipr import (
+    create_ipr,
+    check_ipr_exists,
+    get_status_id_by_name,
+    get_status_by_id,
+    delete_ipr,
+)
 
 router = APIRouter()
 
@@ -20,7 +24,7 @@ async def save_draft(
     pass
 
 
-@router.post("/mentor/iprs/ipr/create", status_code=201)
+@router.post("/mentor/iprs/ipr/create", status_code=HTTPStatus.CREATED)
 async def create_new_ipr(
     draft_ipr: IPRDraftCreate, session: AsyncSession = Depends(get_async_session)
 ):
@@ -42,45 +46,5 @@ async def remove_ipr(
     session: AsyncSession = Depends(get_async_session),
 ):
     ipr = await check_ipr_exists(ipr_id, session)
-    ipr = await delete_ipr(ipr, session)
+    await delete_ipr(ipr, session)
     return {}
-
-
-async def check_ipr_exists(
-    ipr_id: int,
-    session: AsyncSession,
-) -> Ipr:
-    ipr = await get_ipr_by_id(ipr_id, session)
-    if ipr is None:
-        raise HTTPException(status_code=404, detail="ИПР не найден.")
-    return ipr
-
-
-async def get_status_id_by_name(
-    status_name: str,
-    session: AsyncSession,
-) -> Optional[int]:
-
-    status_id = await session.execute(
-        select(Status.id).where(Status.name == status_name)
-    )
-    status_id = status_id.scalars().first()
-    return status_id
-
-
-async def get_status_by_id(
-    status_id: int,
-    session: AsyncSession,
-) -> Optional[str]:
-
-    status_name = await session.execute(
-        select(Status.name).where(Status.id == status_id)
-    )
-    status_name = status_name.scalars().first()
-    return status_name
-
-
-async def get_ipr_by_id(ipr_id: int, session: AsyncSession) -> Optional[Ipr]:
-    ipr = await session.execute(select(Ipr).where(Ipr.id == ipr_id))
-    ipr = ipr.scalars().first()
-    return ipr
