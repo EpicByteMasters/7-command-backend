@@ -15,9 +15,8 @@ async def check_ipr_dates(user_id: int,
                           ):
     async with session.begin():
         today_date = datetime.today().strftime('%Y-%m-%d')
-
-        query = Ipr.select().where(Ipr.c.user_id == user_id, Ipr.c.date == today_date)
-        ipr_records = await session.execute(query)
+        query = select(Ipr).where(Ipr.user_id == user_id, Ipr.close_date == today_date)
+        ipr_records = (await session.execute(query)).scalars().all()
 
         if ipr_records:
             for ipr_record in ipr_records:
