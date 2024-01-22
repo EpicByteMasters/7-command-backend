@@ -28,7 +28,6 @@ async def save_draft(
 async def create_new_ipr(
     draft_ipr: IPRDraftCreate, session: AsyncSession = Depends(get_async_session)
 ):
-
     status_id = await get_status_id_by_name("DRAFT", session)
     if status_id is None:
         raise HTTPException(status_code=422, detail="Статус DRAFT не найден в БД")

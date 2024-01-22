@@ -1,8 +1,9 @@
 from typing import Optional
-
+from http import HTTPStatus
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
+from fastapi import HTTPException
 
 from app.core.db import AsyncSessionLocal
 from app.models.ipr import Ipr, Status
@@ -10,12 +11,9 @@ from app.schemas.ipr import IPRDraftCreate
 
 
 async def create_ipr(draft_ipr: IPRDraftCreate, session: AsyncSession) -> Ipr:
-
     draft_ipr_data = draft_ipr.dict()
-
     db_draft_ipr = Ipr(**draft_ipr_data)
     session.add(db_draft_ipr)
-
     await session.commit()
     await session.refresh(db_draft_ipr)
     return db_draft_ipr
