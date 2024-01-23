@@ -14,7 +14,7 @@ async def check_ipr_dates(user_id: int,
                           session: AsyncSession
                           ):
     async with session.begin():
-        today_date = datetime.today().strftime('%Y-%m-%d')
+        today_date = datetime.today().strftime("%Y-%m-%d")
         query = select(Ipr).where(Ipr.user_id == user_id, Ipr.close_date == today_date)
         ipr_records = (await session.execute(query)).scalars().all()
 
@@ -24,10 +24,10 @@ async def check_ipr_dates(user_id: int,
                 if user:
                     notification_data = NotificationGet(
                         id=ipr_record.id,
-                        idUrl=f'/myteam/iprs/ipr/{ipr_record.id}',
+                        idUrl=f"/myteam/iprs/ipr/{ipr_record.id}",
                         task_id=ipr_record.task_id,
-                        message=('Истек срок плана развития.'
-                                 'Руководителю необходимо подвести итоги и оценить достижение цели'),
+                        message=("Истек срок плана развития."
+                                 "Руководителю необходимо подвести итоги и оценить достижение цели"),
                     )
                     await send_notification(user, notification_data)
 

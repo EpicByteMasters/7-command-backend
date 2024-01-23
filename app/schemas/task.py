@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel, validator
 
@@ -11,7 +11,7 @@ class TaskDB(BaseModel):
     name: Optional[str]
     dateOfEnd: Optional[date]
     description: Optional[str]
-    educations: Optional[EducationsDB]
+    educations: Optional[List[EducationsDB]]
     commentOfMentor: Optional[str]
     status: str
 
