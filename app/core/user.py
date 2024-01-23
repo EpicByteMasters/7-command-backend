@@ -25,7 +25,7 @@ def get_jwt_strategy() -> JWTStrategy:
 
 
 auth_backend = AuthenticationBackend(
-    name="alfa_user_backend",
+    name="user_backend",
     transport=cookie_transport,
     get_strategy=get_jwt_strategy,
 )
