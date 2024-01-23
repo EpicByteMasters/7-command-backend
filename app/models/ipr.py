@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, Text
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, Text, func
 
 from app.core.db import Base, BaseWithName
 
@@ -34,7 +34,7 @@ class Ipr(Base):
     supervisor_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     goal_id = Column(Integer, ForeignKey("goal.id"), nullable=True)
     specialty_id = Column(Integer, ForeignKey("specialty.id"), nullable=True)
-    create_date = Column(DateTime(), nullable=True)
+    create_date = Column(DateTime(), func.now, nullable=True)
     close_date = Column(DateTime(), nullable=True)
     mentor_id = Column(Integer, ForeignKey("user.id"), nullable=True)
     description = Column(Text(), nullable=True)

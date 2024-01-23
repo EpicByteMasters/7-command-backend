@@ -13,7 +13,7 @@ class IPRDraftReturn(BaseModel):
 
 class IPRDraftCreate(BaseModel):
     emplyee_id: int = Field(alias="employeeId")
-    supervisor_id: Optional[int]
+    # supervisor_id: Optional[int]
     # goal_id: Optional[int]
     # specialty_id: Optional[int]
     # create_date: Optional[date]
@@ -21,7 +21,7 @@ class IPRDraftCreate(BaseModel):
     # mentor_id: Optional[int]
     # description: Optional[str]
     # comment: Optional[str]
-    ipr_status_id: Optional[int]
+    # ipr_status_id: Optional[int]
     # ipr_grade_id: Optional[int]
     # supervisor_comment: Optional[str]
 

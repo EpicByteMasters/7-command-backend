@@ -14,15 +14,16 @@ from app.schemas.ipr import IPRDraftCreate, IPRDraftReturn
 class IPRCrud(CRUDBase):
     async def create_ipr_draft(self,
                                draft_ipr: IPRDraftCreate,
-                               session: AsyncSession) -> IPRDraftReturn:
+                               session: AsyncSession,
+                               user: User) -> IPRDraftReturn:
         draft_ipr_data = draft_ipr.dict()
         db_draft_ipr = Ipr(**draft_ipr_data)
         db_draft_ipr.ipr_status_id = 1
+        db_draft_ipr.supervisor_id = user.id
         session.add(db_draft_ipr)
         await session.commit()
         await session.refresh(db_draft_ipr)
-        # return db_draft_ipr
-        return HTTPStatus.OK, IPRDraftReturn(id=db_draft_ipr.id, status='DRAFT')
+        return {'id': db_draft_ipr.id, 'status': 'DRAFT'}
 
     async def update_ipr_draft(self,
                                ipr_id: int,
@@ -37,6 +38,9 @@ class IPRCrud(CRUDBase):
                 "error": "Not Found",
                 "errorMessage": exception.detail
             }
+        tasks = ipr_draft['tasks']
+        educations = tasks['educations']
+        # Дописать создание таски и educations крудом
         update_data = ipr_draft.dict(exclude_unset=True)
 
         for field in ipr_draft:
@@ -50,10 +54,13 @@ class IPRCrud(CRUDBase):
     async def delete_ipr(self,
                          id_ipr: int,
                          session: AsyncSession,
-                         user: User) -> Ipr:
+                         user: User) -> HTTPStatus:
         try:
-            db_ipr = await self.get_ipr_by_id(id_ipr)
-            self.check_ipr_user(db_ipr, user)
+            db_ipr = await self.get_ipr_by_id(id_ipr, session)
+            await self.check_ipr_user(db_ipr, user)
+            await session.delete(db_ipr)
+            await session.commit()
+            return HTTPStatus.OK
         except HTTPException as exception:
             return {
                 "timestamp": datetime.now().isoformat(),
@@ -61,22 +68,19 @@ class IPRCrud(CRUDBase):
                 "error": "Not Found",
                 "errorMessage": exception.detail
             }
-        await session.delete(db_ipr)
-        await session.commit()
-        return db_ipr
 
-    async def check_ipr_exists(self,
-                               ipr_id: int,
-                               session: AsyncSession) -> Ipr:
-        ipr = await self.get_ipr_by_id(ipr_id,
-                                       session
-                                       )
-        if ipr is None:
-            raise HTTPException(
-                status_code=HTTPStatus.NOT_FOUND,
-                detail="ИПР не найден."
-            )
-        return ipr
+    # async def check_ipr_exists(self,
+    #                            ipr_id: int,
+    #                            session: AsyncSession) -> Ipr:
+    #     ipr = await self.get_ipr_by_id(ipr_id,
+    #                                    session
+    #                                    )
+    #     if ipr is None:
+    #         raise HTTPException(
+    #             status_code=HTTPStatus.NOT_FOUND,
+    #             detail="ИПР не найден."
+    #         )
+    #     return ipr
 
     async def get_status_id_by_name(self,
                                     status_name: str,
@@ -92,7 +96,7 @@ class IPRCrud(CRUDBase):
                                status_id: int,
                                session: AsyncSession,
                                ) -> Optional[str]:
-
+        """ЭТО НУЖНО В КРУД СТАТУСА????"""
         status_name = await session.execute(
             select(Status.name).where(Status.id == status_id)
         )
@@ -106,6 +110,9 @@ class IPRCrud(CRUDBase):
         ipr = ipr.scalars().first()
         if ipr is None:
             raise HTTPException(HTTPStatus.NOT_FOUND, detail=f'IPR с id - {ipr_id} не существует')
+
+        ipr.create_date = datetime.strptime(str(ipr.create_date), '%Y%m%d').date() if ipr.create_date else None
+        ipr.close_date = datetime.strptime(str(ipr.close_date), '%Y%m%d').date() if ipr.close_date else None
 
         return ipr
 

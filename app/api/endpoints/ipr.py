@@ -13,7 +13,7 @@ from app.schemas.ipr import IPRDraftCreate, IPRDraftSave, IPRDraftReturn
 router = APIRouter()
 
 
-@router.put("/mentor/iprs/ipr/<draft_id>/save-draft",
+@router.put("/mentor/iprs/ipr/{draft_id}/save-draft",
             response_model=IPRDraftSave,
             dependencies=[Depends(current_user)],
             status_code=HTTPStatus.CREATED)
@@ -21,7 +21,7 @@ async def save_draft(draft_id: int,
                      draft_ipr: IPRDraftSave,
                      session: AsyncSession = Depends(get_async_session),
                      user: User = Depends(current_user),):
-    return await ipr_crud.update(session, draft_id, draft_ipr, user)
+    return await ipr_crud.update_ipr_draft(session, draft_id, draft_ipr, user)
 
 
 @router.post("/mentor/iprs/ipr/create",
@@ -31,8 +31,8 @@ async def save_draft(draft_id: int,
 async def create_new_ipr(draft_ipr: IPRDraftCreate,
                          session: AsyncSession = Depends(get_async_session),
                          user: User = Depends(current_user)):
-    ipr_draft = await ipr_crud.create_ipr_draft(draft_ipr, session)
-    return
+    ipr_draft = await ipr_crud.create_ipr_draft(draft_ipr, session, user)
+    return ipr_draft
 
 
 @router.delete("/mentor/iprs/ipr/{ipr_id}",
@@ -41,5 +41,4 @@ async def remove_ipr(ipr_id: int,
                      user: User = Depends(current_user),
                      session: AsyncSession = Depends(get_async_session)):
     # ipr = await ipr_crud.check_ipr_exists(ipr_id, session)
-    await ipr_crud.delete_ipr(ipr_id, session, user)
-    return {}
+    return await ipr_crud.delete_ipr(ipr_id, session, user)
