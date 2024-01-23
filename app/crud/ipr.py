@@ -38,8 +38,8 @@ class IPRCrud(CRUDBase):
                 "error": "Not Found",
                 "errorMessage": exception.detail
             }
-        tasks = ipr_draft['tasks']
-        educations = tasks['educations']
+        # tasks = ipr_draft['tasks']
+        # educations = tasks['educations']
         # Дописать создание таски и educations крудом
         update_data = ipr_draft.dict(exclude_unset=True)
 
