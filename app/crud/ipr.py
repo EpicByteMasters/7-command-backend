@@ -14,14 +14,15 @@ from app.schemas.ipr import IPRDraftCreate, IPRDraftReturn
 class IPRCrud(CRUDBase):
     async def create_ipr_draft(self,
                                draft_ipr: IPRDraftCreate,
-                               session: AsyncSession) -> Ipr:
+                               session: AsyncSession) -> IPRDraftReturn:
         draft_ipr_data = draft_ipr.dict()
         db_draft_ipr = Ipr(**draft_ipr_data)
+        db_draft_ipr.ipr_status_id = 1
         session.add(db_draft_ipr)
         await session.commit()
         await session.refresh(db_draft_ipr)
-
-        return IPRDraftReturn(id=db_draft_ipr.id, status='DRAFT')
+        # return db_draft_ipr
+        return HTTPStatus.OK, IPRDraftReturn(id=db_draft_ipr.id, status='DRAFT')
 
     async def update_ipr_draft(self,
                                ipr_id: int,

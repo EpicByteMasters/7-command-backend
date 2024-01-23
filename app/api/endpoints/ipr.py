@@ -31,13 +31,8 @@ async def save_draft(draft_id: int,
 async def create_new_ipr(draft_ipr: IPRDraftCreate,
                          session: AsyncSession = Depends(get_async_session),
                          user: User = Depends(current_user)):
-    # status_name = "DRAFT"
-    # status_id = await ipr_crud.get_status_id_by_name(status_name, session)
-    # if status_id is None:
-    #     raise HTTPException(status_code=422, detail="Статус DRAFT не найден в БД")
-    # draft_ipr.ipr_status_id = status_id
-    # draft_ipr.supervisor_id = 30  # Not null в модели
-    return await ipr_crud.create_ipr_draft(draft_ipr, session)
+    ipr_draft = await ipr_crud.create_ipr_draft(draft_ipr, session)
+    return
 
 
 @router.delete("/mentor/iprs/ipr/{ipr_id}",
