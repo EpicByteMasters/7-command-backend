@@ -32,7 +32,7 @@ async def websocket_endpoint(websocket: WebSocket,
         del user_websockets[current_user.id]
 
 
-@router.get('/notifications',
+@router.get("/notifications",
             response_class=StreamingResponse
             )
 async def notifications_endpoint(user: User = Depends(current_user),

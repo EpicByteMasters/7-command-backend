@@ -4,45 +4,47 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.core.db import get_async_session
-from app.schemas.ipr import IPRDraftCreate, IPRDraftSave
-from app.crud.ipr import (
-    create_ipr,
-    check_ipr_exists,
-    get_status_id_by_name,
-    get_status_by_id,
-    delete_ipr,
-)
+from app.core.user import current_user
+from app.crud.ipr import ipr_crud
+from app.models.user import User
+from app.schemas.ipr import IPRDraftCreate, IPRDraftSave, IPRDraftReturn
+
 
 router = APIRouter()
 
 
-@router.put("/mentor/iprs/ipr/:id/save-draft", response_model=IPRDraftSave)
-async def save_draft(
-    session: AsyncSession = Depends(get_async_session),
-    # user: User = Depends(get_current_user())
-):
-    pass
+@router.put("/mentor/iprs/ipr/<draft_id>/save-draft",
+            response_model=IPRDraftSave,
+            dependencies=[Depends(current_user)],
+            status_code=HTTPStatus.CREATED)
+async def save_draft(draft_id: int,
+                     draft_ipr: IPRDraftSave,
+                     session: AsyncSession = Depends(get_async_session),
+                     user: User = Depends(current_user),):
+    return await ipr_crud.update(session, draft_id, draft_ipr, user)
 
 
-@router.post("/mentor/iprs/ipr/create", status_code=HTTPStatus.CREATED)
-async def create_new_ipr(
-    draft_ipr: IPRDraftCreate, session: AsyncSession = Depends(get_async_session)
-):
-    status_name = "DRAFT"
-    status_id = await get_status_id_by_name(status_name, session)
-    if status_id is None:
-        raise HTTPException(status_code=422, detail="Статус DRAFT не найден в БД")
-    draft_ipr.ipr_status_id = status_id
-    draft_ipr.supervisor_id = 30  # Not null в модели
-    new_ipr = await create_ipr(draft_ipr, session)
-    return {"id": new_ipr.id, "status": status_name}
+@router.post("/mentor/iprs/ipr/create",
+             response_model=IPRDraftReturn,
+             status_code=HTTPStatus.CREATED,
+             dependencies=[Depends(current_user)])
+async def create_new_ipr(draft_ipr: IPRDraftCreate,
+                         session: AsyncSession = Depends(get_async_session),
+                         user: User = Depends(current_user)):
+    # status_name = "DRAFT"
+    # status_id = await ipr_crud.get_status_id_by_name(status_name, session)
+    # if status_id is None:
+    #     raise HTTPException(status_code=422, detail="Статус DRAFT не найден в БД")
+    # draft_ipr.ipr_status_id = status_id
+    # draft_ipr.supervisor_id = 30  # Not null в модели
+    return await ipr_crud.create_ipr_draft(draft_ipr, session)
 
 
-@router.delete("/mentor/iprs/ipr/{ipr_id}")
-async def remove_ipr(
-    ipr_id: int,
-    session: AsyncSession = Depends(get_async_session),
-):
-    ipr = await check_ipr_exists(ipr_id, session)
-    await delete_ipr(ipr, session)
+@router.delete("/mentor/iprs/ipr/{ipr_id}",
+               dependencies=[Depends(current_user)])
+async def remove_ipr(ipr_id: int,
+                     user: User = Depends(current_user),
+                     session: AsyncSession = Depends(get_async_session)):
+    # ipr = await ipr_crud.check_ipr_exists(ipr_id, session)
+    await ipr_crud.delete_ipr(ipr_id, session, user)
     return {}
