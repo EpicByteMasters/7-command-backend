@@ -11,7 +11,7 @@ class TaskDB(BaseModel):
     name: Optional[str]
     dateOfEnd: Optional[date]
     description: Optional[str]
-    educations: Optional[EducationsDB]
+    educations: Optional[List[EducationsDB]]
     commentOfMentor: Optional[str]
     status: str
 

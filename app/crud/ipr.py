@@ -5,7 +5,6 @@ from http import HTTPStatus
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from fastapi import HTTPException
-from fastapi.encoders import jsonable_encoder
 
 from app.crud.base import CRUDBase
 from app.models import Ipr, Status, User
@@ -37,7 +36,6 @@ class IPRCrud(CRUDBase):
                 "error": "Not Found",
                 "errorMessage": exception.detail
             }
-        ipr = jsonable_encoder(ipr_draft)
         update_data = ipr_draft.dict(exclude_unset=True)
 
         for field in ipr_draft:
@@ -117,5 +115,6 @@ class IPRCrud(CRUDBase):
             raise HTTPException(
                 HTTPStatus.FORBIDDEN, detail='У вас нет прав модифицировать/удалять данный ИПР'
             )
+
 
 ipr_crud = IPRCrud(Ipr)
