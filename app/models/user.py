@@ -1,6 +1,7 @@
 from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTable
 from sqlalchemy import Column, ForeignKey, Integer, String
 
+
 from app.core.db import Base, BaseWithName
 
 
@@ -19,5 +20,4 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     position_id = Column(Integer, ForeignKey("position.id"), nullable=True)
     specialty_id = Column(Integer, ForeignKey("specialty.id"), nullable=True)
     supervisor_id = Column(Integer, ForeignKey("user.id"), nullable=True)
-    # supervisor = relationship(lambda: User, remote_side=id, backref="supervisor")
     image_url = Column(String(), nullable=True)
