@@ -149,4 +149,5 @@ dmypy.json
 pip/
 
 .client
-fastapi.db
+.dbeaver/
+.project
