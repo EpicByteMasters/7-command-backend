@@ -21,17 +21,17 @@ class TaskFile(BaseWithName):
 
 
 class Task(BaseWithName):
-    close_date = Column(DateTime())
-    description = Column(Text())
+    close_date = Column(DateTime(), nullable=False)
+    description = Column(Text(), nullable=False)
     comment = Column(Text(), nullable=True)
     supervisor_comment = Column(Text(), nullable=True)
     task_status_id = Column(Integer, ForeignKey("taskstatus.id"))
-    file = Column(Integer, ForeignKey("taskfile.id"))
+    file = Column(Integer, ForeignKey("taskfile.id"), nullable=True)
+    ipr_id = Column(Integer, ForeignKey("ipr.id"), nullable=False)
 
 
 class Education(BaseWithName):
-    competency_id = Column(Integer, ForeignKey("competency.id", ondelete="CASCADE"))
-    specialty_id = Column(Integer, ForeignKey("specialty.id", ondelete="CASCADE"))
+    specialty_id = Column(Integer, ForeignKey("specialty.id"))
     url_link = Column(String())
 
 
@@ -46,6 +46,6 @@ class SpecialtyEducation(Base):
     education_id = Column(Integer, ForeignKey("education.id", ondelete="CASCADE"))
 
 
-class CompetencyLearning(Base):
+class CompetencyEducation(Base):
     competency_id = Column(Integer, ForeignKey("competency.id", ondelete="CASCADE"))
     education_id = Column(Integer, ForeignKey("education.id", ondelete="CASCADE"))
