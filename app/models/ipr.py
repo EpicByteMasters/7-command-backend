@@ -8,14 +8,10 @@ class Goal(BaseWithName):
 
 
 class Competency(BaseWithName):
-    pass
+    skill_type = Column(Integer())
 
 
 class Status(BaseWithName):
-    pass
-
-
-class Grade(BaseWithName):
     pass
 
 
@@ -26,11 +22,11 @@ class CompetencySpecialty(Base):
 
 class CompetencyIpr(Base):
     competency_id = Column(Integer, ForeignKey("competency.id", ondelete="CASCADE"))
-    idr_id = Column(Integer, ForeignKey("ipr.id", ondelete="CASCADE"))
+    ipr_id = Column(Integer, ForeignKey("ipr.id", ondelete="CASCADE"))
 
 
 class Ipr(Base):
-    emplyee_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    employee_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     supervisor_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     goal_id = Column(Integer, ForeignKey("goal.id"), nullable=True)
     specialty_id = Column(Integer, ForeignKey("specialty.id"), nullable=True)
@@ -40,10 +36,5 @@ class Ipr(Base):
     description = Column(Text(), nullable=True)
     comment = Column(Text(), nullable=True)
     ipr_status_id = Column(Integer, ForeignKey("status.id"), nullable=False)
-    ipr_grade_id = Column(Integer, ForeignKey("grade.id"), nullable=True)
+    ipr_grade = Column(Integer(), nullable=True)
     supervisor_comment = Column(Text(), nullable=True)
-
-
-class TaskIpr(Base):
-    ipr_id = Column(Integer, ForeignKey("ipr.id", ondelete="CASCADE"))
-    task_id = Column(Integer, ForeignKey("task.id", ondelete="CASCADE"))
