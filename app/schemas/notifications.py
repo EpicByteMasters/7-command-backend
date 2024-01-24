@@ -1,8 +1,10 @@
-from pydantic import AnyUrl, BaseModel, constr
+from datetime import date
+
+from pydantic import BaseModel
 
 
 class NotificationGet(BaseModel):
-    id: int
-    idUrl: AnyUrl
-    task_id: int
-    message: constr(max_length=128)
+    title: str
+    briefText: str
+    date: date
+    url: str

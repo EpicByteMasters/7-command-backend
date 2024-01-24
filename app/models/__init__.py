@@ -7,3 +7,4 @@ from .task import (  # noqa
     Task, TaskFile, TaskStatus
 )
 from .user import Position, Specialty, User  # noqa
+from .notification import Notification # noqa

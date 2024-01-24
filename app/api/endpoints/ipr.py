@@ -31,8 +31,7 @@ async def save_draft(draft_id: int,
 async def create_new_ipr(draft_ipr: IPRDraftCreate,
                          session: AsyncSession = Depends(get_async_session),
                          user: User = Depends(current_user)):
-    ipr_draft = await ipr_crud.create_ipr_draft(draft_ipr, session)
-    return
+    return await ipr_crud.create_ipr_draft(draft_ipr, session)
 
 
 @router.delete("/mentor/iprs/ipr/{ipr_id}",
