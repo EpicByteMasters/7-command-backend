@@ -3,7 +3,7 @@ import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from sqlalchemy import select, join
-from app.models import User, Notification, Ipr, Task, TaskIpr
+from app.models import User, Notification, Ipr, Task
 from app.schemas.notifications import NotificationGet
 
 
