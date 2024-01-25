@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: c837ef05ee9e
+Revision ID: 72accbe96e7b
 Revises: 
-Create Date: 2024-01-24 03:31:46.371874
+Create Date: 2024-01-25 16:05:02.873349
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'c837ef05ee9e'
+revision = '72accbe96e7b'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -40,8 +40,8 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('status',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=128), nullable=True),
+    sa.Column('id', sa.String(), nullable=False),
+    sa.Column('name', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('taskfile',
@@ -51,8 +51,8 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('taskstatus',
-    sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=128), nullable=True),
+    sa.Column('id', sa.String(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('competencyspecialty',
@@ -110,9 +110,10 @@ def upgrade():
     sa.Column('mentor_id', sa.Integer(), nullable=True),
     sa.Column('description', sa.Text(), nullable=True),
     sa.Column('comment', sa.Text(), nullable=True),
-    sa.Column('ipr_status_id', sa.Integer(), nullable=False),
+    sa.Column('ipr_status_id', sa.String(), nullable=False),
     sa.Column('ipr_grade', sa.Integer(), nullable=True),
     sa.Column('supervisor_comment', sa.Text(), nullable=True),
+    sa.Column('is_deleted', sa.Boolean(), server_default=sa.text('0'), nullable=True),
     sa.ForeignKeyConstraint(['employee_id'], ['user.id'], ),
     sa.ForeignKeyConstraint(['goal_id'], ['goal.id'], ),
     sa.ForeignKeyConstraint(['ipr_status_id'], ['status.id'], ),
@@ -144,7 +145,7 @@ def upgrade():
     sa.Column('description', sa.Text(), nullable=False),
     sa.Column('comment', sa.Text(), nullable=True),
     sa.Column('supervisor_comment', sa.Text(), nullable=True),
-    sa.Column('task_status_id', sa.Integer(), nullable=True),
+    sa.Column('task_status_id', sa.String(), nullable=True),
     sa.Column('file', sa.Integer(), nullable=True),
     sa.Column('ipr_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['file'], ['taskfile.id'], ),

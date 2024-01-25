@@ -13,7 +13,7 @@ from app.core.db import Base, BaseWithName
 
 
 class TaskStatus(BaseWithName):
-    pass
+    id = Column(String, primary_key=True)
 
 
 class TaskFile(BaseWithName):
@@ -25,7 +25,7 @@ class Task(BaseWithName):
     description = Column(Text(), nullable=False)
     comment = Column(Text(), nullable=True)
     supervisor_comment = Column(Text(), nullable=True)
-    task_status_id = Column(Integer, ForeignKey("taskstatus.id"))
+    task_status_id = Column(String, ForeignKey("taskstatus.id"))
     file = Column(Integer, ForeignKey("taskfile.id"), nullable=True)
     ipr_id = Column(Integer, ForeignKey("ipr.id"), nullable=False)
 
