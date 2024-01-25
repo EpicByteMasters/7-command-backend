@@ -1,13 +1,14 @@
 from sqlalchemy import (
     Boolean,
     Column,
-    DateTime,
     false,
     ForeignKey,
     Integer,
     String,
     Text,
+    Date
 )
+from sqlalchemy.orm import relationship
 
 from app.core.db import Base, BaseWithName
 
@@ -21,13 +22,14 @@ class TaskFile(BaseWithName):
 
 
 class Task(BaseWithName):
-    close_date = Column(DateTime(), nullable=False)
+    close_date = Column(Date, nullable=False)
     description = Column(Text(), nullable=False)
     comment = Column(Text(), nullable=True)
     supervisor_comment = Column(Text(), nullable=True)
     task_status_id = Column(Integer, ForeignKey("taskstatus.id"))
     file = Column(Integer, ForeignKey("taskfile.id"), nullable=True)
     ipr_id = Column(Integer, ForeignKey("ipr.id"), nullable=False)
+    notifications = relationship("Notification", back_populates="task")
 
 
 class Education(BaseWithName):
