@@ -11,7 +11,6 @@ from app.core.user import current_user
 from app.crud.notifications import check_ipr_dates, user_websockets
 from app.models import User
 
-
 router = APIRouter()
 user_check_status = {}
 
