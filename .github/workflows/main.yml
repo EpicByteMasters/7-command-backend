@@ -3,12 +3,11 @@ name: 7-command-backend workflow
 
 on:
   push:
-    branches:
-      - develop
+    branches: [develop, BACK-27983524]
 
 jobs:
-    build_and_push_to_docker_hub:
-    - name: Push Docker image to Docker Hub
+build_and_push_to_docker_hub:
+    name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
 
     steps:
