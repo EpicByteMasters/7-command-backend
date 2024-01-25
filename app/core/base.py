@@ -2,13 +2,12 @@
 from app.core.db import Base  # noqa
 from app.models import (  # noqa
     Competency,
-    CompetencyLearning,
+    CompetencyEducation,
     CompetencyIpr,
     CompetencySpecialty,
     Education,
     EducationTask,
     Goal,
-    Grade,
     Ipr,
     Position,
     Specialty,
@@ -16,7 +15,6 @@ from app.models import (  # noqa
     Status,
     Task,
     TaskFile,
-    TaskIpr,
     TaskStatus,
     User,
 )
