@@ -25,13 +25,13 @@ class Task(BaseWithName):
     description = Column(Text(), nullable=False)
     comment = Column(Text(), nullable=True)
     supervisor_comment = Column(Text(), nullable=True)
-    task_status_id = Column(String, ForeignKey("taskstatus.id"))
+    task_status = Column(String, ForeignKey("taskstatus.id"))
     file = Column(Integer, ForeignKey("taskfile.id"), nullable=True)
     ipr_id = Column(Integer, ForeignKey("ipr.id"), nullable=False)
 
 
 class Education(BaseWithName):
-    specialty_id = Column(Integer, ForeignKey("specialty.id"))
+    specialty = Column(String, ForeignKey("specialty.id"))
     url_link = Column(String())
 
 
@@ -42,10 +42,10 @@ class EducationTask(Base):
 
 
 class SpecialtyEducation(Base):
-    specialty_id = Column(Integer, ForeignKey("specialty.id", ondelete="CASCADE"))
+    specialty = Column(String, ForeignKey("specialty.id", ondelete="CASCADE"))
     education_id = Column(Integer, ForeignKey("education.id", ondelete="CASCADE"))
 
 
 class CompetencyEducation(Base):
-    competency_id = Column(Integer, ForeignKey("competency.id", ondelete="CASCADE"))
+    competency = Column(String, ForeignKey("competency.id", ondelete="CASCADE"))
     education_id = Column(Integer, ForeignKey("education.id", ondelete="CASCADE"))

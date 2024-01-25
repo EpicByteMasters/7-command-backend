@@ -3,7 +3,7 @@ from http import HTTPStatus
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.utils import add_competencies, create_tasks, get_foreign_keys_by_names
+from app.api.utils import add_competencies, create_tasks
 from app.core.db import get_async_session
 from app.core.user import current_user
 from app.crud import ipr_crud
@@ -37,7 +37,6 @@ async def save_draft(
     new_draft_dict = new_draft_ipr.dict()
     new_draft_dict = await create_tasks(new_draft_dict, ipr_id, session)
     new_draft_dict = await add_competencies(new_draft_dict, ipr_id, session)
-    new_draft_dict = await get_foreign_keys_by_names(new_draft_dict, session)
 
     new_draft_ipr = IprDraftUpdate.parse_obj(new_draft_dict)
     ipr = await ipr_crud.update(new_draft_ipr, ipr, session)
@@ -57,7 +56,7 @@ async def create_new_ipr(
     user: User = Depends(current_user),
 ):
     draft_ipr.supervisor_id = user.id
-    draft_ipr.ipr_status_id = "DRAFT"
+    draft_ipr.ipr_status = "DRAFT"
     ipr_draft = await ipr_crud.create(draft_ipr, session)
     return ipr_draft
 
@@ -80,5 +79,4 @@ async def get_my_iprs(
     session: AsyncSession = Depends(get_async_session),
 ):
     iprs = await ipr_crud.get_users_ipr(user, session)
-    print(iprs)
     return iprs

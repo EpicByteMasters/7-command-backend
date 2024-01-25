@@ -48,7 +48,8 @@ class TaskBase(BaseModel):
     def text_does_not_have_incorrect_symbols(cls, value):
         pattern = re.compile(r'^[а-яА-ЯёЁa-zA-Z0-9?.,!:-_*()%"]+$')
         if not pattern.match(value):
-            raise ValueError("Использованы некорректные символы")
+            return value
+            # raise ValueError("Использованы некорректные символы")
         return value
 
     @validator("close_date")
@@ -84,9 +85,10 @@ class TaskCreateInput(TaskBase):
 
     @validator("supervisor_comment")
     def text_does_not_have_incorrect_symbols(cls, value):
-        pattern = re.compile(r'^[а-яА-ЯёЁa-zA-Z0-9?.,!:-_*()%"@]+$')
+        pattern = re.compile(r'^[a-zA-Zа-яА-ЯёЁ0-9]+$')
         if not pattern.match(value):
-            raise ValueError("Использованы некорректные символы")
+            return value
+            # raise ValueError("Использованы некорректные символы")
         return value
 
 

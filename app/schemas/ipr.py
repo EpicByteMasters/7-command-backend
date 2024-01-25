@@ -6,21 +6,19 @@ from pydantic import BaseModel, validator
 
 from .utils import to_camel
 from app.schemas.task import TaskCreateInput
-# from app.schemas.user import UserIprRead
 
 
 class IprDB(BaseModel):
     id: int
-    ipr_status_id: str
+    ipr_status: str
     supervisor_id: Optional[int]
-    goal_id: Optional[int]
-    specialty_id: Optional[int]
+    goal: Optional[str]
+    specialty: Optional[str]
     create_date: Optional[date]
     close_date: Optional[date]
     mentor_id: Optional[int]
     description: Optional[str]
     comment: Optional[str]
-    ipr_grade: Optional[int]
     supervisor_comment: Optional[str]
 
     class Config:
@@ -31,8 +29,8 @@ class IprDB(BaseModel):
 
 class IprListRead(BaseModel):
     id: int
-    goal_id: str
-    ipr_status_id: str
+    goal: str
+    ipr_status: str
     create_date: date
     close_date: date
 
@@ -45,7 +43,7 @@ class IprListRead(BaseModel):
 class IprDraftCreate(BaseModel):
     employee_id: int
     supervisor_id: Optional[int]
-    ipr_status_id: Optional[str]
+    ipr_status: Optional[str]
 
     class Config:
         alias_generator = to_camel
@@ -61,7 +59,7 @@ class IprDraftUpdateInput(BaseModel):
     description: Optional[str]
     comment: Optional[str]
     tasks: Optional[list[TaskCreateInput]]
-    ipr_status_id: str
+    ipr_status: str
 
     class Config:
         alias_generator = to_camel
@@ -69,9 +67,10 @@ class IprDraftUpdateInput(BaseModel):
 
     @validator("comment")
     def text_does_not_have_incorrect_symbols(cls, value):
-        pattern = re.compile(r'^[а-яА-ЯёЁa-zA-Z0-9?.,!:-_*()%"]+$')
+        pattern = re.compile(r'^[a-zA-Zа-яА-ЯёЁ0-9]+$')
         if not pattern.match(value):
-            raise ValueError("Использованы некорректные символы")
+            return value
+            # raise ValueError("Использованы некорректные символы")
         return value
 
     @validator("close_date")
@@ -85,13 +84,13 @@ class IprDraftUpdateInput(BaseModel):
 
 
 class IprDraftUpdate(BaseModel):
-    goal_id: Optional[int]
-    specialty_id: Optional[int]
+    goal: Optional[str]
+    specialty: Optional[str]
     close_date: Optional[date]
     mentor_id: Optional[int]
     description: Optional[str]
     comment: Optional[str]
-    ipr_status_id: Optional[str]
+    ipr_status: Optional[str]
 
 
 class TaskIprCreate(BaseModel):
@@ -100,5 +99,5 @@ class TaskIprCreate(BaseModel):
 
 
 class CompetencyIprCreate(BaseModel):
-    competency_id: int
+    competency: str
     ipr_id: int

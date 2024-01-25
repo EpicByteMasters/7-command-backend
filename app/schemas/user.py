@@ -9,8 +9,8 @@ class UserRead(schemas.BaseUser[int]):
     surname: str
     patronymic: str
     image_url: str
-    position_id: int
-    specialty_id: int
+    position_id: str
+    specialty_id: str
     supervisor_id: int
 
     class Config:
@@ -23,7 +23,7 @@ class UserIprRead(BaseModel):
     surname: str
     patronymic: str
     image_url: str
-    position: str
+    position_id: str
 
     class Config:
         orm_mode = True
@@ -36,6 +36,6 @@ class UserCreate(schemas.BaseUserCreate):
     surname: str
     patronymic: str
     image_url: str
-    position_id: int
-    specialty_id: int
+    position_id: str
+    specialty_id: str
     supervisor_id: int
