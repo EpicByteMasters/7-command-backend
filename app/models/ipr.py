@@ -1,4 +1,13 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, Text
+from sqlalchemy import (
+    Boolean,
+    Column,
+    Date,
+    false,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+)
 
 from app.core.db import Base, BaseWithName
 
@@ -11,8 +20,9 @@ class Competency(BaseWithName):
     skill_type = Column(Integer())
 
 
-class Status(BaseWithName):
-    pass
+class Status(Base):
+    id = Column(String, primary_key=True)
+    name = Column(String())
 
 
 class CompetencySpecialty(Base):
@@ -30,11 +40,12 @@ class Ipr(Base):
     supervisor_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     goal_id = Column(Integer, ForeignKey("goal.id"), nullable=True)
     specialty_id = Column(Integer, ForeignKey("specialty.id"), nullable=True)
-    create_date = Column(DateTime(), nullable=True)
-    close_date = Column(DateTime(), nullable=True)
+    create_date = Column(Date(), nullable=True)
+    close_date = Column(Date(), nullable=True)
     mentor_id = Column(Integer, ForeignKey("user.id"), nullable=True)
     description = Column(Text(), nullable=True)
     comment = Column(Text(), nullable=True)
-    ipr_status_id = Column(Integer, ForeignKey("status.id"), nullable=False)
+    ipr_status_id = Column(String, ForeignKey("status.id"), nullable=False)
     ipr_grade = Column(Integer(), nullable=True)
     supervisor_comment = Column(Text(), nullable=True)
+    is_deleted = Column(Boolean(), server_default=false())

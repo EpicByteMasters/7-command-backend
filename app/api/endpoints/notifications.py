@@ -15,6 +15,7 @@ router = APIRouter()
     "/notifications",
     response_model=list[NotificationGet],
     dependencies=[Depends(current_user)],
+    deprecated=True
 )
 async def get_notifications(
     user: User = Depends(current_user),

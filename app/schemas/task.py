@@ -4,6 +4,8 @@ from typing import Optional
 
 from pydantic import BaseModel, Field, validator
 
+from .utils import to_camel
+
 
 class Educations(BaseModel):
     name: str
@@ -73,8 +75,12 @@ class TaskDB(TaskBase):
 
 
 class TaskCreateInput(TaskBase):
-    educations: Optional[list[Educations]]
+    educations: Optional[list[int]]
     supervisor_comment: Optional[str] = Field(None, max_length=96)
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
 
     @validator("supervisor_comment")
     def text_does_not_have_incorrect_symbols(cls, value):
