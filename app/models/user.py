@@ -1,5 +1,6 @@
 from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTable
 from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
 
 
 from app.core.db import Base, BaseWithName
@@ -21,3 +22,4 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     specialty_id = Column(Integer, ForeignKey("specialty.id"), nullable=True)
     supervisor_id = Column(Integer, ForeignKey("user.id"), nullable=True)
     image_url = Column(String(), nullable=True)
+    notifications = relationship("Notification", back_populates="user")
