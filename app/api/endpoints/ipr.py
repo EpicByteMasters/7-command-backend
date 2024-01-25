@@ -8,7 +8,13 @@ from app.core.db import get_async_session
 from app.core.user import current_user
 from app.crud import ipr_crud
 from app.models.user import User
-from app.schemas.ipr import IprDB, IprDraftCreate, IprDraftUpdate, IprDraftUpdateInput
+from app.schemas.ipr import (
+    IprDB,
+    IprDraftCreate,
+    IprDraftUpdate,
+    IprDraftUpdateInput,
+    IprListRead
+)
 
 
 router = APIRouter()
@@ -64,11 +70,15 @@ async def remove_ipr(ipr_id: int, session: AsyncSession = Depends(get_async_sess
 
 
 @router.get(
-    "/my_iprs", response_model=list[IprDB], dependencies=[Depends(current_user)]
+    "/my_iprs",
+    response_model=list[IprListRead],
+    response_model_exclude_none=True,
+    dependencies=[Depends(current_user)]
 )
 async def get_my_iprs(
     user: User = Depends(current_user),
     session: AsyncSession = Depends(get_async_session),
 ):
     iprs = await ipr_crud.get_users_ipr(user, session)
+    print(iprs)
     return iprs

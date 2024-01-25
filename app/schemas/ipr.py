@@ -6,13 +6,12 @@ from pydantic import BaseModel, validator
 
 from .utils import to_camel
 from app.schemas.task import TaskCreateInput
-from app.schemas.user import UserRead
+# from app.schemas.user import UserIprRead
 
 
 class IprDB(BaseModel):
     id: int
     ipr_status_id: str
-    employee: Optional[UserRead]
     supervisor_id: Optional[int]
     goal_id: Optional[int]
     specialty_id: Optional[int]
@@ -23,6 +22,19 @@ class IprDB(BaseModel):
     comment: Optional[str]
     ipr_grade: Optional[int]
     supervisor_comment: Optional[str]
+
+    class Config:
+        orm_mode = True
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+
+
+class IprListRead(BaseModel):
+    id: int
+    goal_id: str
+    ipr_status_id: str
+    create_date: date
+    close_date: date
 
     class Config:
         orm_mode = True

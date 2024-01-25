@@ -1,7 +1,7 @@
 from sqlalchemy import (
     Boolean,
     Column,
-    DateTime,
+    Date,
     false,
     ForeignKey,
     Integer,
@@ -40,8 +40,8 @@ class Ipr(Base):
     supervisor_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     goal_id = Column(Integer, ForeignKey("goal.id"), nullable=True)
     specialty_id = Column(Integer, ForeignKey("specialty.id"), nullable=True)
-    create_date = Column(DateTime(), nullable=True)
-    close_date = Column(DateTime(), nullable=True)
+    create_date = Column(Date(), nullable=True)
+    close_date = Column(Date(), nullable=True)
     mentor_id = Column(Integer, ForeignKey("user.id"), nullable=True)
     description = Column(Text(), nullable=True)
     comment = Column(Text(), nullable=True)

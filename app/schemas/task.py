@@ -75,7 +75,7 @@ class TaskDB(TaskBase):
 
 
 class TaskCreateInput(TaskBase):
-    educations: Optional[list[Educations]]
+    educations: Optional[list[int]]
     supervisor_comment: Optional[str] = Field(None, max_length=96)
 
     class Config:

@@ -1,7 +1,7 @@
 from sqlalchemy import (
     Boolean,
     Column,
-    DateTime,
+    Date,
     false,
     ForeignKey,
     Integer,
@@ -21,7 +21,7 @@ class TaskFile(BaseWithName):
 
 
 class Task(BaseWithName):
-    close_date = Column(DateTime(), nullable=False)
+    close_date = Column(Date(), nullable=False)
     description = Column(Text(), nullable=False)
     comment = Column(Text(), nullable=True)
     supervisor_comment = Column(Text(), nullable=True)
