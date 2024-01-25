@@ -9,13 +9,10 @@ from app.schemas.notifications import NotificationGet
 async def check_ipr_closed(user: User,
                            session: AsyncSession
                            ):
-    query_ipr = (
-        select(Ipr)
-        .where(and_(
-            Ipr.close_date <= datetime.date.today(),
-            not_(Ipr.id.in_(
-                select(Notification.ipr_id)
-                .where(Notification.user_id == user.id))))))
+    query_ipr = (select(Ipr).where(
+        and_(Ipr.close_date <= datetime.date.today(), not_(
+            Ipr.id.in_(select(Notification.ipr_id).where(
+                Notification.user_id == user.id))))))
 
     ipr_closed_objs = (await session.execute(query_ipr)).scalars().all()
     for ipr_closed_obj in ipr_closed_objs:
@@ -81,4 +78,3 @@ async def get_user_notifications(user: User,
         date=notification.date,
         url=f'http://link/{link_id}'
     ) for notification in result]
-

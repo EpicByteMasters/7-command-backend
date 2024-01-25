@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
-from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.utils import add_competencies, create_tasks, get_foreign_keys_by_names
 from app.core.db import get_async_session
@@ -9,10 +9,11 @@ from app.core.user import current_user
 from app.crud import ipr_crud
 from app.models.user import User
 from app.schemas.ipr import (
+    IprDB,
     IprDraftCreate,
     IprDraftUpdate,
     IprDraftUpdateInput,
-    IprDraftReturn,
+    IprListRead
 )
 
 
@@ -21,6 +22,8 @@ router = APIRouter()
 
 @router.put(
     "/{ipr_id}/save-draft",
+    response_model=IprDB,
+    response_model_exclude_none=True,
     dependencies=[Depends(current_user)],
     status_code=HTTPStatus.CREATED,
 )
@@ -38,12 +41,13 @@ async def save_draft(
 
     new_draft_ipr = IprDraftUpdate.parse_obj(new_draft_dict)
     ipr = await ipr_crud.update(new_draft_ipr, ipr, session)
-    return {}
+    return ipr
 
 
 @router.post(
     "/create",
-    response_model=IprDraftReturn,
+    response_model=IprDB,
+    response_model_exclude_none=True,
     status_code=HTTPStatus.CREATED,
     dependencies=[Depends(current_user)],
 )
@@ -53,7 +57,7 @@ async def create_new_ipr(
     user: User = Depends(current_user),
 ):
     draft_ipr.supervisor_id = user.id
-    draft_ipr.ipr_status_id = 1
+    draft_ipr.ipr_status_id = "DRAFT"
     ipr_draft = await ipr_crud.create(draft_ipr, session)
     return ipr_draft
 
@@ -63,3 +67,18 @@ async def remove_ipr(ipr_id: int, session: AsyncSession = Depends(get_async_sess
     ipr = await ipr_crud.check_ipr_exists(ipr_id, session)
     await ipr_crud.remove(ipr, session)
     return {}
+
+
+@router.get(
+    "/my_iprs",
+    response_model=list[IprListRead],
+    response_model_exclude_none=True,
+    dependencies=[Depends(current_user)]
+)
+async def get_my_iprs(
+    user: User = Depends(current_user),
+    session: AsyncSession = Depends(get_async_session),
+):
+    iprs = await ipr_crud.get_users_ipr(user, session)
+    print(iprs)
+    return iprs

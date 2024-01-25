@@ -13,8 +13,8 @@ repos:
         exclude: alembic/
     -   id: trailing-whitespace
         exclude: alembic/
--   repo: https://github.com/psf/black
-    rev: 22.10.0
+-   repo: https://github.com/pycqa/flake8
+    rev: 7.0.0
     hooks:
-    -   id: black
+    -   id: flake8
         exclude: alembic/
