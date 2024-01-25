@@ -4,7 +4,7 @@ name: 7-command-backend workflow
 on:
   push:
     branches:
-      - main  # измените на вашу ветку по умолчанию
+      - develop
 
 jobs:
     build_and_push_to_docker_hub:
