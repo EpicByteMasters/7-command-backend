@@ -45,7 +45,7 @@ jobs:
         passphrase: ${{ secrets.PASSPHRASE }}
         script: |
           # Выполняет pull образа с DockerHub
-          sudo docker pull <имя-пользователя>/<имя-репозитория>
+          sudo docker pull ppen76/a100
           #остановка всех контейнеров
           sudo docker stop $(sudo docker ps -a -q)
           sudo docker run --rm -d -p 81:80 ppen76/a100
