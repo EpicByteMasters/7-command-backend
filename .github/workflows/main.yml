@@ -3,7 +3,7 @@ name: 7-command-backend workflow
 
 on:
   push:
-    branches: [develop, BACK-27983524]
+    branches: [develop]
 
 jobs:
   build_and_push_to_docker_hub:
@@ -47,7 +47,7 @@ jobs:
           # Выполняет pull образа с DockerHub
           sudo docker login -u ppen76 -p ${{ secrets.DOCKER_PASSWORD }}
           sudo docker pull ppen76/a100
-          #остановка всех контейнеров
+          #остановка контейнерa
           sudo docker stop develop_c951
           sudo docker run --rm --name develop_c951 -d -p 81:80 ppen76/a100
   send_message:
