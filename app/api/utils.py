@@ -19,30 +19,57 @@ async def add_competencies(
     competencies = new_draft_dict.pop("competence")
     if competencies is None:
         return new_draft_dict
-    for comp in competencies:
-        connection = {"competency": comp, "ipr_id": ipr_id}
+    for competency in competencies:
+        connection = {"competency": competency, "ipr_id": ipr_id}
         schema = CompetencyIprCreate.parse_obj(connection)
         await competency_ipr_crud.create(schema, session)
     return new_draft_dict
 
 
-async def create_tasks(new_draft_dict: dict, ipr_id, session) -> dict:
+# async def create_tasks(new_draft_dict: dict, ipr_id, session) -> dict:
+#     """
+#     Вспомогательная функци создания заданий для ИПР и связи их с соответсвующим
+#     ИПР при сохранении черновика ИПР.
+#     """
+#     tasks = new_draft_dict.pop("tasks")
+#     if tasks is None:
+#         return new_draft_dict
+#     for task in tasks:
+#         educations = task.pop("educations")
+#         task["ipr_id"] = ipr_id
+#         new_task = TaskCreate.parse_obj(task)
+#         task = await task_crud.create(new_task, session)
+#         task_id = task.id
+#         if educations is not None:
+#             for education_id in educations:
+#                 education_task = {"task_id": task_id, "education_id": education_id}
+#                 eduSchema = EduTaskCreate.parse_obj(education_task)
+#                 await education_task_crud.create(eduSchema, session)
+#     return new_draft_dict
+
+
+async def create_or_update_tasks(new_draft_dict: dict, ipr_id, session) -> dict:
     """
     Вспомогательная функци создания заданий для ИПР и связи их с соответсвующим
-    ИПР при сохранении черновика ИПР.
+    ИПР при сохранении черновика ИПР или при редактировании ИПР.
     """
     tasks = new_draft_dict.pop("tasks")
     if tasks is None:
         return new_draft_dict
-    for task in tasks:
-        educations = task.pop("educations")
-        task["ipr_id"] = ipr_id
-        new_task = TaskCreate.parse_obj(task)
-        task = await task_crud.create(new_task, session)
-        task_id = task.id
+    for task_in in tasks:
+        educations = task_in.pop("educations")
+        task_id = task_in.pop('task_id')
+        if task_id is None:
+            task_in["ipr_id"] = ipr_id
+            new_task = TaskCreate.parse_obj(task_in)
+            task = await task_crud.create(new_task, session)
+        else:
+            task = await task_crud.get(task_id, session)
+            task = await task_crud.update(task_in, task, session)
+
         if educations is not None:
             for education_id in educations:
-                education_task = {"task_id": task_id, "education_id": education_id}
+                education_task = {"task_id": task.id, "education_id": education_id}
                 eduSchema = EduTaskCreate.parse_obj(education_task)
-                await education_task_crud.create(eduSchema, session)
+                await education_task_crud.get_or_create(eduSchema, session)
     return new_draft_dict

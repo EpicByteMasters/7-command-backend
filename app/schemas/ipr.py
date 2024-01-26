@@ -5,7 +5,7 @@ from typing import Optional
 from pydantic import BaseModel, validator
 
 from .utils import to_camel
-from app.schemas.task import TaskCreateInput
+from app.schemas.task import TaskCreateInput, IprUpdate
 
 
 class IprDB(BaseModel):
@@ -101,3 +101,13 @@ class TaskIprCreate(BaseModel):
 class CompetencyIprCreate(BaseModel):
     competency: str
     ipr_id: int
+
+
+class IprUpdate(BaseModel):
+    goal: Optional[str]
+    competence: Optional[str]
+    specialty: Optional[str]
+    mentor_id: Optional[int]
+    description: Optional[str]
+    comment: Optional[str]
+    tasks: Optional[list[str]]
