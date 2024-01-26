@@ -48,8 +48,8 @@ jobs:
           sudo docker login -u ppen76 -p ${{ secrets.DOCKER_PASSWORD }}
           sudo docker pull ppen76/a100
           #остановка всех контейнеров
-          sudo docker stop $(sudo docker ps -a -q)
-          sudo docker run --rm -d -p 81:80 ppen76/a100
+          sudo docker stop develop_c951
+          sudo docker run --rm --name develop_c951 -d -p 81:80 ppen76/a100
   send_message:
     runs-on: ubuntu-latest
     needs: deploy
