@@ -1,7 +1,7 @@
 from sqlalchemy import (
     Boolean,
     Column,
-    DateTime,
+    Date,
     false,
     ForeignKey,
     Integer,
@@ -13,7 +13,7 @@ from app.core.db import Base, BaseWithName
 
 
 class TaskStatus(BaseWithName):
-    pass
+    id = Column(String, primary_key=True)
 
 
 class TaskFile(BaseWithName):
@@ -21,17 +21,17 @@ class TaskFile(BaseWithName):
 
 
 class Task(BaseWithName):
-    close_date = Column(DateTime(), nullable=False)
+    close_date = Column(Date(), nullable=False)
     description = Column(Text(), nullable=False)
     comment = Column(Text(), nullable=True)
     supervisor_comment = Column(Text(), nullable=True)
-    task_status_id = Column(Integer, ForeignKey("taskstatus.id"))
+    task_status = Column(String, ForeignKey("taskstatus.id"))
     file = Column(Integer, ForeignKey("taskfile.id"), nullable=True)
     ipr_id = Column(Integer, ForeignKey("ipr.id"), nullable=False)
 
 
 class Education(BaseWithName):
-    specialty_id = Column(Integer, ForeignKey("specialty.id"))
+    specialty = Column(String, ForeignKey("specialty.id"))
     url_link = Column(String())
 
 
@@ -42,10 +42,10 @@ class EducationTask(Base):
 
 
 class SpecialtyEducation(Base):
-    specialty_id = Column(Integer, ForeignKey("specialty.id", ondelete="CASCADE"))
+    specialty = Column(String, ForeignKey("specialty.id", ondelete="CASCADE"))
     education_id = Column(Integer, ForeignKey("education.id", ondelete="CASCADE"))
 
 
 class CompetencyEducation(Base):
-    competency_id = Column(Integer, ForeignKey("competency.id", ondelete="CASCADE"))
+    competency = Column(String, ForeignKey("competency.id", ondelete="CASCADE"))
     education_id = Column(Integer, ForeignKey("education.id", ondelete="CASCADE"))

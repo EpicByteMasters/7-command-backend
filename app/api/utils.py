@@ -19,8 +19,8 @@ async def add_competencies(
     competencies = new_draft_dict.pop("competence")
     if competencies is None:
         return new_draft_dict
-    for comp in competencies:
-        connection = {"competency": comp, "ipr_id": ipr_id}
+    for competency in competencies:
+        connection = {"competency": competency, "ipr_id": ipr_id}
         schema = CompetencyIprCreate.parse_obj(connection)
         await competency_ipr_crud.create(schema, session)
     return new_draft_dict

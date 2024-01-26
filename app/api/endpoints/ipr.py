@@ -1,5 +1,6 @@
 from http import HTTPStatus
 
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends
 from fastapi.responses import Response
@@ -10,6 +11,7 @@ from app.core.user import current_user
 from app.crud import ipr_crud, task_crud
 from app.models.user import User
 from app.schemas.ipr import (
+    IprDB,
     IprDraftCreate,
     IprDraftUpdate,
     IprDraftUpdateInput,
@@ -73,7 +75,7 @@ async def create_new_ipr(draft_ipr: IprDraftCreate,
                          session: AsyncSession = Depends(get_async_session),
                          user: User = Depends(current_user)):
     draft_ipr.supervisor_id = user.id
-    draft_ipr.ipr_status_id = 1
+    draft_ipr.ipr_status = "DRAFT"
     ipr_draft = await ipr_crud.create(draft_ipr, session)
     return ipr_draft
 

@@ -4,6 +4,8 @@ from typing import Optional
 
 from pydantic import BaseModel, Field, validator
 
+from .utils import to_camel
+
 
 class Educations(BaseModel):
     name: str
@@ -46,7 +48,8 @@ class TaskBase(BaseModel):
     def text_does_not_have_incorrect_symbols(cls, value):
         pattern = re.compile(r'^[а-яА-ЯёЁa-zA-Z0-9?.,!:-_*()%"]+$')
         if not pattern.match(value):
-            raise ValueError("Использованы некорректные символы")
+            return value
+            # raise ValueError("Использованы некорректные символы")
         return value
 
     @validator("close_date")
@@ -73,14 +76,19 @@ class TaskDB(TaskBase):
 
 
 class TaskCreateInput(TaskBase):
-    educations: Optional[list[Educations]]
+    educations: Optional[list[int]]
     supervisor_comment: Optional[str] = Field(None, max_length=96)
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
 
     @validator("supervisor_comment")
     def text_does_not_have_incorrect_symbols(cls, value):
-        pattern = re.compile(r'^[а-яА-ЯёЁa-zA-Z0-9?.,!:-_*()%"@]+$')
+        pattern = re.compile(r'^[a-zA-Zа-яА-ЯёЁ0-9]+$')
         if not pattern.match(value):
-            raise ValueError("Использованы некорректные символы")
+            return value
+            # raise ValueError("Использованы некорректные символы")
         return value
 
 

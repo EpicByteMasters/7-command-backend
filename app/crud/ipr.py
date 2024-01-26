@@ -10,6 +10,13 @@ from app.models import Goal, Ipr, Status, User, Competency, CompetencyIpr
 
 
 class IPRCrud(CRUDBase):
+    async def get_users_ipr(self, user: User, session: AsyncSession):
+        query = select(self.model).where(
+            self.model.is_deleted == False, self.model.employee_id == user.id  # noqa
+        )
+        all_objects = await session.execute(query)
+        return all_objects.scalars().all()
+
     async def check_ipr_exists(self,
                                ipr_id: int,
                                session: AsyncSession) -> Ipr:
