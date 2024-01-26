@@ -45,7 +45,7 @@ jobs:
         passphrase: ${{ secrets.PASSPHRASE }}
         script: |
           # Выполняет pull образа с DockerHub
-          sudo docker login -u ppen76 -p ${{ secrets.DOCKER_PASSWORD }}
+          # sudo docker login -u ppen76 -p ${{ secrets.DOCKER_PASSWORD }}
           sudo docker pull ppen76/a100
           #остановка контейнерa
           sudo docker stop develop_c951
