@@ -4,7 +4,7 @@ from typing import Optional
 
 from pydantic import BaseModel, validator
 
-from app.schemas.task import TaskCreateInput, TaskDB
+from app.schemas.task import TaskCreateInput, IprUpdate
 
 
 class IprDraftReturn(BaseModel):
@@ -69,7 +69,11 @@ class CompetencyIprCreate(BaseModel):
     ipr_id: int
 
 
-class IprPut(BaseModel):
-    mentorId: Optional[int]
+class IprUpdate(BaseModel):
+    goal: Optional[str]
+    competence: Optional[str]
+    specialty: Optional[str]
+    mentor_id: Optional[int]
+    description: Optional[str]
     comment: Optional[str]
-    tasks: Optional[list[TaskDB]]
+    tasks: Optional[list[str]]

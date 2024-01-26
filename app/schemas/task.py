@@ -90,4 +90,9 @@ class TaskCreate(TaskBase):
 
 
 class TaskUpdate:
-    pass
+    name: Optional[str]
+    description: Optional[str]
+    educations: Optional[list[int]]
+    close_date: Optional[date]
+    supervisor_comment: Optional[str]
+    task_status: Optional[str]

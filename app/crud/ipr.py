@@ -75,8 +75,10 @@ class IPRCrud(CRUDBase):
                          session: AsyncSession):
         ipr = await self.get_ipr_by_id(ipr_id, session)
         await self.check_ipr_user(ipr, user)
-        await session.delete(ipr)
+        ipr.is_deleted = True
+        session.add(ipr)
         await session.commit()
+        return
 
 
 ipr_crud = IPRCrud(Ipr)
