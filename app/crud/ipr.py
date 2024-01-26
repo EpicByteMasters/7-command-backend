@@ -10,7 +10,9 @@ from app.models import Goal, Ipr, Status, User, Competency, CompetencyIpr
 
 
 class IPRCrud(CRUDBase):
-    async def check_ipr_exists(self, ipr_id: int, session: AsyncSession) -> Ipr:
+    async def check_ipr_exists(self,
+                               ipr_id: int,
+                               session: AsyncSession) -> Ipr:
         ipr = await self.get_ipr_by_id(ipr_id, session)
         if ipr is None:
             raise HTTPException(
@@ -18,9 +20,9 @@ class IPRCrud(CRUDBase):
             )
         return ipr
 
-    async def get_status_id_by_name(
-        self, status_name: str, session: AsyncSession
-    ) -> Optional[int]:
+    async def get_status_id_by_name(self,
+                                    status_name: str,
+                                    session: AsyncSession) -> Optional[int]:
 
         status_id = await session.execute(
             select(Status.id).where(Status.name == status_name)
@@ -28,11 +30,9 @@ class IPRCrud(CRUDBase):
         status_id = status_id.scalars().first()
         return status_id
 
-    async def get_status_by_id(
-        self,
-        status_id: int,
-        session: AsyncSession,
-    ) -> Optional[str]:
+    async def get_status_by_id(self,
+                               status_id: int,
+                               session: AsyncSession) -> Optional[str]:
 
         status_name = await session.execute(
             select(Status.name).where(Status.id == status_id)
@@ -40,7 +40,9 @@ class IPRCrud(CRUDBase):
         status_name = status_name.scalars().first()
         return status_name
 
-    async def get_ipr_by_id(self, ipr_id: int, session: AsyncSession) -> Optional[Ipr]:
+    async def get_ipr_by_id(self,
+                            ipr_id: int,
+                            session: AsyncSession) -> Optional[Ipr]:
         ipr = await session.execute(select(Ipr).where(Ipr.id == ipr_id))
         ipr = ipr.scalars().first()
         if ipr is None:
@@ -50,18 +52,31 @@ class IPRCrud(CRUDBase):
 
         return ipr
 
-    async def check_ipr_user(self, ipr, user: User) -> None:
+    async def check_ipr_user(self,
+                             ipr,
+                             user: User) -> None:
         if ipr.employee_id != user.id or ipr.supervisor_id != user.id:
             raise HTTPException(
                 HTTPStatus.FORBIDDEN,
                 detail="У вас нет прав модифицировать/удалять данный ИПР",
             )
 
-    async def get_goal_id_by_name(self, goal, session) -> int:
+    async def get_goal_id_by_name(self,
+                                  goal,
+                                  session) -> int:
         query = select(Goal.id).where(Goal.name == goal)
         goal_id = await session.execute(query)
         goal_id = goal_id.scalars().first()
         return goal_id
+
+    async def remove_ipr(self,
+                         user: User,
+                         ipr_id: int,
+                         session: AsyncSession):
+        ipr = await self.get_ipr_by_id(ipr_id, session)
+        await self.check_ipr_user(ipr, user)
+        await session.delete(ipr)
+        await session.commit()
 
 
 ipr_crud = IPRCrud(Ipr)
