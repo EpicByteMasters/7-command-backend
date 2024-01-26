@@ -21,5 +21,4 @@ async def get_iprs(take: int,
                    user: User = Depends(current_user),
                    session: AsyncSession = Depends(get_async_session),
                    ):
-
     pass
