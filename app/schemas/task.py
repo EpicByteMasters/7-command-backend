@@ -67,7 +67,7 @@ class TaskDB(TaskBase):
     educations: Optional[list[EducationsDB]]
     supervisor_comment: Optional[str] = Field(None, max_length=96)
     comment: Optional[str] = Field(None, max_length=96)
-    status: str
+    task_status: str
     file: Optional[list[FileDB]]
     ipr_id: int
 

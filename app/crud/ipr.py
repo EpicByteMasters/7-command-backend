@@ -3,19 +3,44 @@ from http import HTTPStatus
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import load_only
 from fastapi import HTTPException
 
 from app.crud.base import CRUDBase
-from app.models import Goal, Ipr, Status, User, Competency, CompetencyIpr
+from app.models import Goal, Ipr, Status, User, Competency, CompetencyIpr, Task
 
 
 class IPRCrud(CRUDBase):
-    async def get_users_ipr(self, user: User, session: AsyncSession):
+    async def get_user_iprs(self, user: User, session: AsyncSession):
         query = select(self.model).where(
             self.model.is_deleted == False, self.model.employee_id == user.id  # noqa
         )
         all_objects = await session.execute(query)
         return all_objects.scalars().all()
+
+    async def get_user_ipr(self, ipr_id, session: AsyncSession):
+        query = select(Ipr).where(
+            Ipr.id == ipr_id
+        ).options(
+            load_only(
+                Ipr.goal,
+                Ipr.specialty,
+                Ipr.create_date,
+                Ipr.close_date,
+                Ipr.mentor_id,
+                Ipr.description,
+                Ipr.comment,
+                Ipr.ipr_status
+            )
+        )
+
+        ipr_result = await session.execute(query)
+        ipr_obj = ipr_result.scalar_one_or_none()
+        task_query = select(Task).where(Task.ipr_id == ipr_id)
+        tasks_result = await session.execute(task_query)
+        tasks = tasks_result.scalars().all()
+        ipr_obj.tasks = tasks
+        return ipr_obj
 
     async def check_ipr_exists(self, ipr_id: int, session: AsyncSession) -> Ipr:
         ipr = await self.get_ipr_by_id(ipr_id, session)
@@ -47,7 +72,7 @@ class IPRCrud(CRUDBase):
         status_name = status_name.scalars().first()
         return status_name
 
-    async def get_ipr_by_id(self, ipr_id: int, session: AsyncSession) -> Optional[Ipr]:
+    async def get_ipr_by_id(self, ipr_id: int, session: AsyncSession):
         ipr = await session.execute(select(Ipr).where(Ipr.id == ipr_id))
         ipr = ipr.scalars().first()
         if ipr is None:
@@ -62,6 +87,17 @@ class IPRCrud(CRUDBase):
             raise HTTPException(
                 HTTPStatus.FORBIDDEN,
                 detail="У вас нет прав модифицировать/удалять данный ИПР",
+            )
+
+    async def check_user_is_ipr_emloyee(self,
+                                        ipr_id: int,
+                                        user: User,
+                                        session: AsyncSession):
+        ipr = await self.get_ipr_by_id(ipr_id, session)
+        if ipr.employee_id != user.id:
+            raise HTTPException(
+                HTTPStatus.FORBIDDEN,
+                detail="У вас нет прав просматривать данный ИПР",
             )
 
     async def get_goal_id_by_name(self, goal, session) -> int:

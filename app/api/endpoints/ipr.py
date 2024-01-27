@@ -1,6 +1,7 @@
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.utils import add_competencies, create_tasks
@@ -13,7 +14,8 @@ from app.schemas.ipr import (
     IprDraftCreate,
     IprDraftUpdate,
     IprDraftUpdateInput,
-    IprListRead
+    IprListRead,
+    IprWorkerGet
 )
 
 
@@ -74,9 +76,20 @@ async def remove_ipr(ipr_id: int, session: AsyncSession = Depends(get_async_sess
     response_model_exclude_none=True,
     dependencies=[Depends(current_user)]
 )
-async def get_my_iprs(
-    user: User = Depends(current_user),
-    session: AsyncSession = Depends(get_async_session),
-):
-    iprs = await ipr_crud.get_users_ipr(user, session)
+async def get_my_iprs(user: User = Depends(current_user),
+                      session: AsyncSession = Depends(get_async_session)):
+    iprs = await ipr_crud.get_user_iprs(user, session)
     return iprs
+
+
+@router.get('/{ipr_id}',
+            response_model=IprWorkerGet,
+            response_model_exclude_none=True,
+            dependencies=[Depends(current_user)]
+            )
+async def get_by_user(ipr_id: int,
+                      user: User = Depends(current_user),
+                      session: AsyncSession = Depends(get_async_session)):
+    await ipr_crud.check_user_is_ipr_emloyee(ipr_id, user, session)
+    ipr = await ipr_crud.get_user_ipr(ipr_id, session)
+    return jsonable_encoder(ipr)
