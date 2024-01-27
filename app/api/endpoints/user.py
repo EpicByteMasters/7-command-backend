@@ -5,7 +5,7 @@ from app.core.db import AsyncSession, get_async_session
 from app.core.user import current_user
 from app.crud import user_crud
 from app.models.user import User
-from app.schemas.user import UserRead
+from app.schemas.user import UserRead, UserUpdate
 
 router = APIRouter()
 
@@ -40,4 +40,15 @@ async def get_user(id: int, session: AsyncSession = Depends(get_async_session)):
 async def list_users(session: AsyncSession = Depends(get_async_session)):
     """Получить список пользователей."""
     user = await user_crud.get_multi(session)
+    return user
+
+
+@router.patch("/user/update/{id}",
+              response_model=UserRead,
+              dependencies=[Depends(current_user)],
+              description="Изменить данные пользователя")
+async def get_user(id: int, user_update: UserUpdate, session: AsyncSession = Depends(get_async_session)):
+    """Изменить пользователя из базы данных по идентификатору."""
+    user = await user_crud.get(id, session)
+    user = await user_crud.update(user_update, user, session)
     return user

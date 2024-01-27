@@ -7,7 +7,9 @@ from sqlalchemy import (
     Integer,
     String,
     Text,
+    Date
 )
+from sqlalchemy.orm import relationship
 
 from app.core.db import Base, BaseWithName
 
@@ -28,6 +30,7 @@ class Task(BaseWithName):
     task_status = Column(String, ForeignKey("taskstatus.id"))
     file = Column(Integer, ForeignKey("taskfile.id"), nullable=True)
     ipr_id = Column(Integer, ForeignKey("ipr.id"), nullable=False)
+    notifications = relationship("Notification", back_populates="task")
 
 
 class Education(BaseWithName):

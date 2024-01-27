@@ -8,6 +8,7 @@ from sqlalchemy import (
     String,
     Text,
 )
+from sqlalchemy.orm import relationship
 
 from app.core.db import Base, BaseWithName
 
@@ -49,3 +50,4 @@ class Ipr(Base):
     ipr_grade = Column(Integer(), nullable=True)
     supervisor_comment = Column(Text(), nullable=True)
     is_deleted = Column(Boolean(), server_default=false())
+    notifications = relationship("Notification", back_populates="ipr")

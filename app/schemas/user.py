@@ -39,3 +39,10 @@ class UserCreate(schemas.BaseUserCreate):
     position_id: str
     specialty_id: str
     supervisor_id: int
+
+
+class UserUpdate(schemas.BaseUserUpdate):
+    first_name: str
+    surname: str
+    patronymic: str
+    image_url: str
