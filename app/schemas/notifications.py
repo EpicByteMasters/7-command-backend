@@ -8,3 +8,11 @@ class NotificationGet(BaseModel):
     briefText: str
     date: date
     url: str
+
+
+class NotificationAddDB(BaseModel):
+    title: str
+    briefText: str
+    date: date
+    url: str
+    user_id: int
