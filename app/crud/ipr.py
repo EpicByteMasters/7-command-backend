@@ -17,6 +17,26 @@ class IPRCrud(CRUDBase):
         all_objects = await session.execute(query)
         return all_objects.scalars().all()
 
+    async def get_supervisors_ipr(self,
+                                  take: int,
+                                  skip: int,
+                                  statusipr,
+                                  user: User,
+                                  session: AsyncSession
+                                  ):
+        if statusipr:
+            query = select(self.model).where(
+                self.model.is_deleted == False, # noqa
+                self.model.supervisor_id == user.id,
+                self.model.ipr_status == statusipr).offset(skip).limit(take)
+        else:
+            query = select(self.model).where(
+                self.model.is_deleted == False, # noqa
+                self.model.supervisor_id == user.id).offset(skip).limit(take)
+
+        all_objects = await session.execute(query)
+        return all_objects.scalars().all()
+
     async def check_ipr_exists(self, ipr_id: int, session: AsyncSession) -> Ipr:
         ipr = await self.get_ipr_by_id(ipr_id, session)
         if ipr is None:
