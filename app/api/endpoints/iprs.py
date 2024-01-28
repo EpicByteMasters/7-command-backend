@@ -30,14 +30,14 @@ async def get_iprs(take: int,
     resalt = []
     totalcount = 0
     for ipr in iprs:
-        tasks = task_crud.get_multi_task_by_iprid(ipr.id, session)
+        tasks = await task_crud.get_multi_task_by_iprid(ipr.id, session)
         task_count = 0
         task_completed = 0
         for r_task in tasks:
             task_count += 1
             if r_task.task_status == "COMPLETED":
                 task_completed += 1
-        progress = str(task_completed) + str(task_count)
+        progress = str(task_completed) + '/' + str(task_count)
         r_user = await user_crud.get(ipr.employee_id, session)
         resalt.append({"user": r_user, "ipr": ipr, "progress": progress})
         totalcount += 1
