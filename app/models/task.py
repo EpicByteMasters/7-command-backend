@@ -7,6 +7,7 @@ from sqlalchemy import (
     Integer,
     String,
     Text,
+    Date
 )
 from sqlalchemy.orm import relationship
 
@@ -52,6 +53,7 @@ class Task(BaseWithName):
                              lazy="selectin")
     file = relationship("TaskFile", back_populates="task")
     task_status = relationship("TaskStatus", back_populates="task")
+    notifications = relationship("Notification", back_populates="task")
 
 
 class Education(BaseWithName):

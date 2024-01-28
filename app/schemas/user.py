@@ -71,6 +71,14 @@ class UserCreate(schemas.BaseUserCreate):
     position_id: str
     specialty_id: str
     supervisor_id: int
+    is_boss: bool
+
+
+class UserUpdate(schemas.BaseUserUpdate):
+    first_name: str
+    surname: str
+    patronymic: str
+    image_url: str
 
 
 class UserMentorIpr(BaseModel):

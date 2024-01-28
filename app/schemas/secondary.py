@@ -37,3 +37,7 @@ class GoalDoc(DocBase):
 
 class IprStatusDoc(DocBase):
     pass
+
+
+class PositionDoc(DocBase):
+    pass

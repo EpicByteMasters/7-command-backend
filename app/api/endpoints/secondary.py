@@ -3,14 +3,21 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends
 
 from app.core.db import get_async_session
-from app.crud import specialty_crud, education_crud
-from app.crud.ipr import status_crud, goal_crud, competency_crud
-from app.crud.task import task_status_crud
+from app.crud import (
+    competency_crud,
+    education_crud,
+    goal_crud,
+    position_crud,
+    specialty_crud,
+    status_crud,
+    task_status_crud
+)
 from app.schemas.secondary import (
     CompetencyDoc,
     EducationDoc,
     GoalDoc,
     IprStatusDoc,
+    PositionDoc,
     SpecialtyDoc,
     TaskStatusDoc
 )
@@ -65,3 +72,11 @@ async def list_task_statuses(session: AsyncSession = Depends(get_async_session))
 async def list_educations(session: AsyncSession = Depends(get_async_session)):
     educations = await education_crud.get_multi(session)
     return educations
+
+
+@router.get("/position",
+            response_model=list[PositionDoc],
+            response_model_exclude_none=True)
+async def list_positions(session: AsyncSession = Depends(get_async_session)):
+    positions = await position_crud.get_multi(session)
+    return positions

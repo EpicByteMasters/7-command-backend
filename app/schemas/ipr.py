@@ -52,6 +52,31 @@ class IprDraftDB(BaseModel):
         allow_population_by_field_name = True
 
 
+class IprWorkerGet(BaseModel):
+    goal: str
+    specialty: str
+    create_date: Optional[date]
+    close_date: Optional[date]
+    mentor_id: Optional[int]
+    description: Optional[str]
+    comment: Optional[str]
+    tasks: Optional[list[TaskDB]]
+    ipr_status: str
+
+
+class IprListRead(BaseModel):
+    id: int
+    goal: str
+    ipr_status: str
+    create_date: date
+    close_date: date
+
+    class Config:
+        orm_mode = True
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+
+
 class IprDraftCreate(BaseModel):
     employee_id: int
 

@@ -5,8 +5,10 @@ __pycache__/
 
 # C extensions
 *.so
-
+fastapi.db
 # Distribution / packaging
+/alembic
+/alembic/versions
 .Python
 build/
 develop-eggs/

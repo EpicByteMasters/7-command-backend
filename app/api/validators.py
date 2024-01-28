@@ -26,7 +26,7 @@ def check_user_is_supervisor_in_ipr(ipr: Ipr,
 
 
 def check_user_is_supervisor(user: User) -> None:
-    if not user.is_boss:
+    if not user.is_supervisor:
         raise HTTPException(
             HTTPStatus.FORBIDDEN,
             detail="У вас нет прав модифицировать/удалять данный черновик ИПР",

@@ -74,6 +74,7 @@ class Ipr(Base):
     ipr_grade = Column(Integer(), nullable=True)
     supervisor_comment = Column(Text(), nullable=True)
     is_deleted = Column(Boolean(), server_default=false())
+    notifications = relationship("Notification", back_populates="ipr")
     task = relationship("Task", back_populates="ipr", lazy="joined")
     goal = relationship("Goal", back_populates="ipr", lazy="joined")
     specialty = relationship("Specialty", back_populates="ipr", lazy="joined")
