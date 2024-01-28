@@ -101,3 +101,24 @@ class TaskIprCreate(BaseModel):
 class CompetencyIprCreate(BaseModel):
     competency: str
     ipr_id: int
+
+
+class IprsOut(BaseModel):
+    id: Optional[int]
+    first_name: Optional[str]
+    last_name: Optional[str]
+    middle_name: Optional[str]
+    position_id: Optional[str]
+    specialty_id: Optional[str]
+    image_url: Optional[str]
+
+    goal: Optional[str]
+    date_of_end: Optional[str]
+    progress: Optional[str]
+    status: Optional[str]
+    total_count: Optional[int]
+
+    class Config:
+        orm_mode = True
+        alias_generator = to_camel
+        allow_population_by_field_name = True
