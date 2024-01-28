@@ -1,8 +1,19 @@
 from typing import Optional
+
+from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .base import CRUDBase
-from app.models.task import Task, Education, EducationTask
+from app.models.task import Education, EducationTask, Task, TaskStatus
+
+
+class EducationTaskCRUD(CRUDBase):
+
+    async def remove_all_educations_from_task(self, task_id, session: AsyncSession):
+        query = delete(EducationTask).where(EducationTask.task_id == task_id)
+        await session.execute(query)
+        await session.commit()
+        return
 
 
 class TaskCrud(CRUDBase):
@@ -21,6 +32,8 @@ class TaskCrud(CRUDBase):
         return task
 
 
+
 task_crud = TaskCrud(Task)
-education_task_crud = CRUDBase(EducationTask)
+task_status_crud = CRUDBase(TaskStatus)
+education_task_crud = EducationTaskCRUD(EducationTask)
 education_crud = CRUDBase(Education)
