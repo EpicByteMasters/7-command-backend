@@ -151,3 +151,5 @@ pip/
 .client
 .dbeaver/
 .project
+
+/alembic
