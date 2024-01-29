@@ -82,6 +82,14 @@ async def save_draft(ipr_id: int,
     return ipr
 
 
+@router.get("/test-list-iprs",
+            response_model=list[IprDraftDB])
+async def get_all_iprs(session: AsyncSession = Depends(get_async_session)):
+    """Отладочный эндпоинт"""
+    iprs = await ipr_crud.get_multi(session)
+    return iprs
+
+
 @router.get('/{ipr_id}',
             response_model=IprDraftDB,
             response_model_exclude_none=True,
@@ -153,10 +161,3 @@ async def remove_ipr(ipr_id: int,
     check_user_is_ipr_supervisor(ipr, user)
     await ipr_crud.remove_ipr(user, ipr_id, session)
     return Response(status_code=HTTPStatus.NO_CONTENT)
-
-
-@router.get("/test-list-iprs")
-async def get_all_iprs(session: AsyncSession = Depends(get_async_session)):
-    """Отладочный эндпоинт"""
-    iprs = await ipr_crud.get_multi(session)
-    return iprs
