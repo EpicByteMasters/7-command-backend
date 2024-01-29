@@ -5,7 +5,6 @@ __pycache__/
 
 # C extensions
 *.so
-fastapi.db
 # Distribution / packaging
 /alembic
 /alembic/versions
@@ -58,7 +57,6 @@ coverage.xml
 *.pot
 
 *.log
-.db
 db.sqlite3
 db.sqlite3-journal
 
