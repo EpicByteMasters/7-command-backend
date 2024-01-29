@@ -1,15 +1,14 @@
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, Response
-from fastapi.encoders import jsonable_encoder
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends
 
 from app.api.validators import (
     check_ipr_is_draft,
-    check_ipr_user,
+    check_user_is_ipr_supervisor,
+    check_user_is_ipr_employee,
     check_user_is_supervisor,
-    check_user_is_supervisor_in_ipr,
     check_current_user_is_employees_supervisor
 )
 from app.api.utils import add_competencies, update_tasks
@@ -23,8 +22,7 @@ from app.schemas.ipr import (
     IprDraftCreate,
     IprDraftUpdate,
     IprDraftUpdateInput,
-    IprUpdate,
-    IprWorkerGet
+    IprUpdate
 )
 
 
@@ -64,19 +62,6 @@ async def get_my_iprs(
     return iprs
 
 
-@router.get('/{ipr_id}',
-            response_model=IprWorkerGet,
-            response_model_exclude_none=True,
-            dependencies=[Depends(current_user)]
-            )
-async def get_by_user(ipr_id: int,
-                      user: User = Depends(current_user),
-                      session: AsyncSession = Depends(get_async_session)):
-    await ipr_crud.check_user_is_ipr_emloyee(ipr_id, user, session)
-    ipr = await ipr_crud.get_user_ipr(ipr_id, session)
-    return jsonable_encoder(ipr)
-
-
 @router.patch("/{ipr_id}/save-draft",
               response_model=IprDraftDB,
               response_model_exclude_none=True,
@@ -86,7 +71,7 @@ async def save_draft(ipr_id: int,
                      user: User = Depends(current_user),
                      session: AsyncSession = Depends(get_async_session)):
     ipr = await ipr_crud.check_ipr_exists(ipr_id, session)
-    check_user_is_supervisor_in_ipr(ipr, user)
+    check_user_is_ipr_supervisor(ipr, user)
 
     draft_data_in = draft_data_in.dict()
     draft_data_in = await update_tasks(draft_data_in, ipr_id, session)
@@ -106,8 +91,7 @@ async def get_ipr(ipr_id: int,
                   user: User = Depends(current_user),
                   session: AsyncSession = Depends(get_async_session)):
     ipr = await ipr_crud.check_ipr_exists(ipr_id, session)
-    check_ipr_user(ipr, user)
-    ipr = await ipr_crud.get(ipr_id, session)
+    check_user_is_ipr_employee(ipr, user)
     return ipr
 
 
@@ -122,7 +106,7 @@ async def edit_ipr(ipr_id: int,
                    user: User = Depends(current_user),
                    session: AsyncSession = Depends(get_async_session)):
     ipr = await ipr_crud.check_ipr_exists(ipr_id, session)
-    check_ipr_user(ipr, user)
+    check_user_is_ipr_supervisor(ipr, user)
 
     update_data_in = update_data_in.dict()
     update_data_in = await update_tasks(update_data_in, ipr_id, session)
@@ -145,7 +129,7 @@ async def start_ipr(ipr_id: int,
                     session: AsyncSession = Depends(get_async_session)):
     ipr = await ipr_crud.check_ipr_exists(ipr_id, session)
     check_ipr_is_draft(ipr)
-    check_user_is_supervisor_in_ipr(ipr, user)
+    check_user_is_ipr_supervisor(ipr, user)
 
     update_data_in = update_data_in.dict()
     update_data_in = await update_tasks(update_data_in, ipr_id, session)
@@ -166,7 +150,7 @@ async def remove_ipr(ipr_id: int,
                      user: User = Depends(current_user),
                      session: AsyncSession = Depends(get_async_session)):
     ipr = await ipr_crud.check_ipr_exists(ipr_id, session)
-    check_user_is_supervisor_in_ipr(ipr, user)
+    check_user_is_ipr_supervisor(ipr, user)
     await ipr_crud.remove_ipr(user, ipr_id, session)
     return Response(status_code=HTTPStatus.NO_CONTENT)
 

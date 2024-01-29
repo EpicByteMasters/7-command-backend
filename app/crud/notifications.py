@@ -27,7 +27,6 @@ async def check_ipr_closed(user: User,
         msg['user_id'] = user.id
         msg['ipr_id'] = ipr_closed_obj.id
         obj = Notification(**msg)
-        print(1)
         session.add(obj)
         await session.commit()
         await session.refresh(obj)
@@ -46,7 +45,6 @@ async def check_task_closed(user: User,
         ))
     )
     task_closed_objs = (await session.execute(query_task)).scalars().all()
-    print(2)
     for task_closed_obj in task_closed_objs:
         msg = NotificationGet(
             title='Истек срок задачи',
@@ -59,7 +57,6 @@ async def check_task_closed(user: User,
         msg['user_id'] = user.id
         msg['task_id'] = task_closed_obj.id
         obj = Notification(**msg)
-        print(2)
         session.add(obj)
         await session.commit()
         await session.refresh(obj)

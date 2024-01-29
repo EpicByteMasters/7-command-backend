@@ -7,17 +7,25 @@ from app.crud.user import user_crud
 from app.models import Ipr, User
 
 
-def check_ipr_user(ipr: Ipr,
-                   user: User) -> None:
-    if ipr.employee_id != user.id or ipr.supervisor_id != user.id:
+def check_user_is_ipr_employee(ipr: Ipr,
+                               user: User) -> None:
+    if ipr.employee_id != user.id:
         raise HTTPException(
             HTTPStatus.FORBIDDEN,
             detail="У вас нет прав модифицировать/удалять данный ИПР",
         )
 
 
-def check_user_is_supervisor_in_ipr(ipr: Ipr,
-                                    user: User) -> None:
+def check_user_is_ipr_employee_or_supervisor(ipr: Ipr, user: User) -> None:
+    if ipr.supervisor_id != user.id or ipr.employee_id != user.id:
+        raise HTTPException(
+            HTTPStatus.FORBIDDEN,
+            detail="У вас нет прав модифицировать/удалять данный ИПР",
+        )
+
+
+def check_user_is_ipr_supervisor(ipr: Ipr,
+                                 user: User) -> None:
     if ipr.supervisor_id != user.id:
         raise HTTPException(
             HTTPStatus.FORBIDDEN,
