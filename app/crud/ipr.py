@@ -151,8 +151,6 @@ class IPRCrud(CRUDBase):
         latest_task_date = latest_task_date.scalar()
         ipr.close_date = latest_task_date
         session.add(ipr)
-        await session.commit()
-        await session.refresh(ipr)
         return ipr
 
 

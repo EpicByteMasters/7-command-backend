@@ -102,7 +102,6 @@ class IprDraftUpdateInput(BaseModel):
     goal_id: Optional[str]
     specialty_id: Optional[str]
     competency: Optional[list[str]]
-    close_date: Optional[date]
     mentor_id: Optional[int]
     description: Optional[str]
     comment: Optional[str]
@@ -132,7 +131,6 @@ class IprDraftUpdateInput(BaseModel):
 class IprDraftUpdate(BaseModel):
     goal_id: Optional[str]
     specialty_id: Optional[str]
-    close_date: Optional[date]
     mentor_id: Optional[int]
     description: Optional[str]
     comment: Optional[str]

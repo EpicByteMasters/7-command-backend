@@ -10,9 +10,9 @@ from app.schemas.ipr import CompetencyIprCreate
 from app.schemas.task import TaskCreate, EduTaskCreate
 
 
-async def add_competencies(
-    new_draft_dict: dict, ipr_id: int, session: AsyncSession
-) -> dict:
+async def add_competencies(new_draft_dict: dict,
+                           ipr_id: int,
+                           session: AsyncSession) -> dict:
     """
     Вспомогательная функция для создания связи между ИПР и компетенциями
     при сохранении черновика ИПР.
@@ -28,7 +28,9 @@ async def add_competencies(
     return new_draft_dict
 
 
-async def update_tasks(draft_dict: dict, ipr_id, session) -> dict:
+async def update_tasks(draft_dict: dict,
+                       ipr_id: int,
+                       session: AsyncSession) -> dict:
     """
     Вспомогательная функци создания заданий для ИПР и связи их с соответсвующим
     ИПР при сохранении черновика ИПР или при редактировании ИПР.
@@ -45,7 +47,10 @@ async def update_tasks(draft_dict: dict, ipr_id, session) -> dict:
 
         if educations is not None:
             for education_id in educations:
-                education_task = {"task_id": task.id, "education_id": education_id}
+                education_task = {
+                    "task_id": task.id,
+                    "education_id": education_id
+                }
                 education_task = EduTaskCreate.parse_obj(education_task)
                 await education_task_crud.create(education_task, session)
     return draft_dict

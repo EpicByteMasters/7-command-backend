@@ -9,7 +9,9 @@ from app.models.task import Education, EducationTask, Task, TaskStatus
 
 class EducationTaskCRUD(CRUDBase):
 
-    async def remove_all_educations_from_task(self, task_id, session: AsyncSession):
+    async def remove_all_educations_from_task(self,
+                                              task_id,
+                                              session: AsyncSession):
         query = delete(EducationTask).where(EducationTask.task_id == task_id)
         await session.execute(query)
         await session.commit()
@@ -30,7 +32,6 @@ class TaskCrud(CRUDBase):
         await session.refresh(task)
 
         return task
-
 
 
 task_crud = TaskCrud(Task)

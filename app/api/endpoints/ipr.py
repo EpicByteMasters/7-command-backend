@@ -78,6 +78,8 @@ async def get_by_user(ipr_id: int,
 
 
 @router.patch("/{ipr_id}/save-draft",
+              response_model=IprDraftDB,
+              response_model_exclude_none=True,
               tags=['ИПР'])
 async def save_draft(ipr_id: int,
                      draft_data_in: IprDraftUpdateInput,
@@ -131,7 +133,7 @@ async def edit_ipr(ipr_id: int,
     return ipr
 
 
-@router.patch("/{ipr_id}/start_ipr",
+@router.patch("/{ipr_id}/start-ipr",
               response_model=IprDraftDB,
               response_model_exclude_none=True,
               dependencies=[Depends(current_user)],
@@ -150,8 +152,10 @@ async def start_ipr(ipr_id: int,
     update_data_in = await add_competencies(update_data_in, ipr_id, session)
 
     update_data_in = IprDraftUpdate.parse_obj(update_data_in)
-    ipr = await ipr_crud.update(update_data_in, ipr, session)
+    print(ipr.goal)
     ipr = await ipr_crud.to_work(ipr, session)
+    print(ipr.goal)
+    ipr = await ipr_crud.update(update_data_in, ipr, session)
     return ipr
 
 
@@ -165,3 +169,10 @@ async def remove_ipr(ipr_id: int,
     check_user_is_supervisor_in_ipr(ipr, user)
     await ipr_crud.remove_ipr(user, ipr_id, session)
     return Response(status_code=HTTPStatus.NO_CONTENT)
+
+
+@router.get("/test-list-iprs")
+async def get_all_iprs(session: AsyncSession = Depends(get_async_session)):
+    """Отладочный эндпоинт"""
+    iprs = await ipr_crud.get_multi(session)
+    return iprs

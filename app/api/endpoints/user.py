@@ -14,10 +14,8 @@ router = APIRouter()
             response_model=UserRead,
             dependencies=[Depends(current_user)],
             description="Получить текущего пользователя")
-async def get_me(
-    session: AsyncSession = Depends(get_async_session),
-    user: User = Depends(current_user),
-):
+async def get_me(session: AsyncSession = Depends(get_async_session),
+                 user: User = Depends(current_user)):
     """Получить текущего пользователя."""
     user = await user_crud.get(user.id, session)
     return user
@@ -27,7 +25,8 @@ async def get_me(
             response_model=UserRead,
             dependencies=[Depends(current_user)],
             description="Получить пользователя по id")
-async def get_user(id: int, session: AsyncSession = Depends(get_async_session)):
+async def get_user(id: int,
+                   session: AsyncSession = Depends(get_async_session)):
     """Получить пользователя из базы данных по идентификатору."""
     user = await user_crud.get(id, session)
     return user
@@ -35,7 +34,6 @@ async def get_user(id: int, session: AsyncSession = Depends(get_async_session)):
 
 @router.get("/users",
             response_model=list[UserRead],
-            dependencies=[Depends(current_user)],
             description="Получить список всех пользователей")
 async def list_users(session: AsyncSession = Depends(get_async_session)):
     """Получить список пользователей."""
@@ -47,7 +45,9 @@ async def list_users(session: AsyncSession = Depends(get_async_session)):
               response_model=UserRead,
               dependencies=[Depends(current_user)],
               description="Изменить данные пользователя")
-async def get_user(id: int, user_update: UserUpdate, session: AsyncSession = Depends(get_async_session)):
+async def edit_user(id: int,
+                    user_update: UserUpdate,
+                    session: AsyncSession = Depends(get_async_session)):
     """Изменить пользователя из базы данных по идентификатору."""
     user = await user_crud.get(id, session)
     user = await user_crud.update(user_update, user, session)

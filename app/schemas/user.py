@@ -36,6 +36,7 @@ class UserRead(schemas.BaseUser[int]):
     position: PositionDB
     specialty: SpecialtyDB
     supervisor_id: int
+    is_supervisor: bool
 
     class Config:
         alias_generator = to_camel
@@ -47,6 +48,7 @@ class IprInUserRead(BaseModel):
     goal: IprGoalDB
     close_date: date
     status: IprStatusDB
+    is_supervisor: bool
 
 
 class UserIprListRead(BaseModel):
@@ -56,6 +58,7 @@ class UserIprListRead(BaseModel):
     image_url: str
     specialty: SpecialtyDB
     ipr_employee: IprInUserRead
+    is_supervisor: bool
 
     class Config:
         orm_mode = True
@@ -71,7 +74,7 @@ class UserCreate(schemas.BaseUserCreate):
     position_id: str
     specialty_id: str
     supervisor_id: int
-    is_boss: bool
+    is_supervisor: bool
 
 
 class UserUpdate(schemas.BaseUserUpdate):
