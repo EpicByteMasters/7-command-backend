@@ -1,14 +1,11 @@
 from fastapi import APIRouter
 
-from app.api.endpoints import (
-    auth_router,
-    ipr_router,
-    notifications_router,
-    secondary_router,
-    task_router,
-    user_router
-    
-)
+from app.api.endpoints import (auth_router,
+                               ipr_router,
+                               notifications_router,
+                               secondary_router,
+                               task_router,
+                               user_router)
 
 main_router = APIRouter(prefix="/api/v1")
 main_router.include_router(ipr_router, prefix="/mentor/iprs/ipr")

@@ -23,7 +23,7 @@ from app.schemas.ipr import (
     IprDraftUpdate,
     IprDraftUpdateInput,
     IprUpdate,
-    IprStatusPatch
+    # IprStatusPatch
 )
 
 
@@ -164,7 +164,6 @@ async def cancel_ipr(ipr_id=int,
     check_user_is_ipr_mentor_or_supervisor(ipr, user)
     await ipr_crud.to_cancel(ipr, session)
     return HTTPStatus.OK
-
 
 
 @router.post("/{ipr_id}",
