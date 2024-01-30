@@ -154,10 +154,8 @@ async def start_ipr(ipr_id: int,
 
 @router.patch('/{ipr_id}/cancel',
               dependencies=[Depends(current_user)],
-              # status_code=HTTPStatus.OK,
               tags=['ИПР'])
 async def cancel_ipr(ipr_id=int,
-                     # status_data=IprStatusPatch,
                      user: User = Depends(current_user),
                      session: AsyncSession = Depends(get_async_session)):
     ipr = await ipr_crud.get_ipr_by_id(ipr_id, session)

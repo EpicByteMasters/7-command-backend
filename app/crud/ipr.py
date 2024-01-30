@@ -132,8 +132,7 @@ class IPRCrud(CRUDBase):
     async def to_cancel(self, ipr: Ipr, session: AsyncSession):
         ipr.ipr_status_id = "CANCELED"
         query = select(Task).where(
-            Task.ipr_id == ipr.id).order_by(
-            desc(Task.close_date))
+            Task.ipr_id == ipr.id)
         tasks = (await session.execute(query)).scalars().all()
         for task in tasks:
             task.close_date = datetime.date.today()
