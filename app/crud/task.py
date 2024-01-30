@@ -1,6 +1,6 @@
 from typing import Optional
 
-from sqlalchemy import delete
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .base import CRUDBase
@@ -32,6 +32,11 @@ class TaskCrud(CRUDBase):
         await session.refresh(task)
 
         return task
+
+    async def get_multi_task_by_iprid(self, ipr_id: int, session: AsyncSession):
+        query = select(self.model).where(self.model.ipr_id == ipr_id)
+        all_objects = await session.execute(query)
+        return all_objects.scalars().all()
 
 
 task_crud = TaskCrud(Task)

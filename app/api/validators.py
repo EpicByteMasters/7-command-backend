@@ -7,9 +7,9 @@ from app.crud.user import user_crud
 from app.models import Ipr, User
 
 
-def check_user_is_ipr_employee(ipr: Ipr,
-                               user: User) -> None:
-    if ipr.employee_id != user.id:
+def check_ipr_user(ipr: Ipr,
+                   user: User) -> None:
+    if ipr.employee_id != user.id or ipr.supervisor_id != user.id:
         raise HTTPException(
             HTTPStatus.FORBIDDEN,
             detail="У вас нет прав модифицировать/удалять данный ИПР",

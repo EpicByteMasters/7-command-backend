@@ -118,6 +118,26 @@ class IPRCrud(CRUDBase):
                                 detail="Этот пользователь уже имеет активный ИПР")
         return
 
+    async def get_supervisors_ipr(self,
+                                  take: int,
+                                  skip: int,
+                                  statusipr,
+                                  user: User,
+                                  session: AsyncSession
+                                  ):
+        if statusipr:
+            query = select(self.model).where(
+                self.model.is_deleted == False, # noqa
+                self.model.supervisor_id == user.id,
+                self.model.ipr_status == statusipr).offset(skip).limit(take)
+        else:
+            query = select(self.model).where(
+                self.model.is_deleted == False, # noqa
+                self.model.supervisor_id == user.id).offset(skip).limit(take)
+
+        all_objects = await session.execute(query)
+        return all_objects.unique().scalars().all()
+
     async def to_work(self, ipr: Ipr, session: AsyncSession):
         ipr.ipr_status_id = "IN_PROGRESS"
         query = select(Task.close_date).where(
