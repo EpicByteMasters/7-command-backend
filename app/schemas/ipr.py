@@ -27,6 +27,14 @@ class IprDB(BaseModel):
         allow_population_by_field_name = True
 
 
+class IprDraftDB(BaseModel):
+    pass
+
+
+class IprUpdate(BaseModel):
+    pass
+
+
 class IprListRead(BaseModel):
     id: int
     goal: str

@@ -6,10 +6,11 @@ from fastapi import APIRouter, Depends
 
 from app.api.validators import (
     check_ipr_is_draft,
-    # check_user_is_ipr_supervisor,
+    check_user_is_ipr_supervisor,
     check_user_is_supervisor,
     check_current_user_is_employees_supervisor,
-    # check_user_is_ipr_employee_or_supervisor,
+    check_user_is_ipr_employee_or_supervisor,
+    check_user_is_ipr_mentor_or_supervisor
 )
 from app.api.utils import (add_competencies, update_tasks)
 from app.core.db import get_async_session
@@ -18,11 +19,11 @@ from app.crud import ipr_crud
 from app.models.user import User
 from app.schemas.ipr import (
     IprListRead,
-    # IprDraftDB,
+    IprDraftDB,
     IprDraftCreate,
     IprDraftUpdate,
     IprDraftUpdateInput,
-    # IprUpdate,
+    IprUpdate,
     IprComplete
 )
 
@@ -171,5 +172,7 @@ async def ipr_complete(ipr_id: int,
                        ipr_patch: IprComplete,
                        user: User = Depends(current_user),
                        session: AsyncSession = Depends(get_async_session)):
-
+    ipr = ipr_crud.get_ipr_by_id(ipr_id, session)
+    check_user_is_ipr_mentor_or_supervisor(ipr, user)
+    ipr_crud.to_complete(ipr_patch, ipr_id, session)
     return HTTPStatus.OK

@@ -1,11 +1,13 @@
-from typing import Optional
+import datetime
 from http import HTTPStatus
+from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import and_, delete, desc, select
 from fastapi import HTTPException
 
 from app.crud.base import CRUDBase
+from app.schemas.ipr import IprComplete
 from app.models import (
     Competency,
     CompetencyIpr,
@@ -147,6 +149,23 @@ class IPRCrud(CRUDBase):
         ipr.close_date = latest_task_date
         session.add(ipr)
         return ipr
+
+    async def to_complete(self,
+                          ipr: Ipr,
+                          ipr_data: IprComplete,
+                          session: AsyncSession):
+        ipr.ipr_status_id = ipr_data.ipr_status
+        ipr.ipr_grade = ipr_data.ipr_grade
+        ipr.supervisor_comment = ipr_data.supervisor_comment
+        tasks_query = select(Task).where(
+            Task.ipr_id == ipr.id and Task.task_status_id in ['AWAITING_REVIEW', 'IN_PROGRESS'])
+        tasks = (session.execute(tasks_query)).scalars().all()
+        for task in tasks:
+            task.close_date = datetime.date.today()
+            task.task_status_id = ipr_data.ipr_status
+            session.add(task)
+        session.add(ipr)
+        await session.commit()
 
 
 class CompetencyIprCrud(CRUDBase):
