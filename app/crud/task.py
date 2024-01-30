@@ -8,10 +8,7 @@ from app.models.task import Education, EducationTask, Task, TaskStatus
 
 
 class EducationTaskCRUD(CRUDBase):
-
-    async def remove_all_educations_from_task(self,
-                                              task_id,
-                                              session: AsyncSession):
+    async def remove_all_educations_from_task(self, task_id, session: AsyncSession):
         query = delete(EducationTask).where(EducationTask.task_id == task_id)
         await session.execute(query)
         await session.commit()
@@ -19,11 +16,10 @@ class EducationTaskCRUD(CRUDBase):
 
 
 class TaskCrud(CRUDBase):
-
     async def patch_task_awaiting_review(
-            self,
-            task_id: int,
-            session: AsyncSession,
+        self,
+        task_id: int,
+        session: AsyncSession,
     ) -> Optional[Task]:
         task = await task_crud.get(task_id, session=session)
         task.task_status = "AWAITING_REVIEW"

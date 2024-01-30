@@ -24,9 +24,9 @@ class Goal(BaseWithName):
 class Competency(BaseWithName):
     id = Column(String, primary_key=True)
     skill_type = Column(String())
-    ipr = relationship("CompetencyIpr",
-                       back_populates="competency_rel",
-                       lazy="selectin")
+    ipr = relationship(
+        "CompetencyIpr", back_populates="competency_rel", lazy="selectin"
+    )
 
 
 class Status(BaseWithName):
@@ -36,28 +36,22 @@ class Status(BaseWithName):
 
 class CompetencySpecialty(Base):
     id = Column(Integer(), nullable=True)
-    specialty = Column(String,
-                       ForeignKey("specialty.id", ondelete="CASCADE"),
-                       primary_key=True)
-    competency = Column(String,
-                        ForeignKey("competency.id", ondelete="CASCADE"),
-                        primary_key=True)
+    specialty = Column(
+        String, ForeignKey("specialty.id", ondelete="CASCADE"), primary_key=True
+    )
+    competency = Column(
+        String, ForeignKey("competency.id", ondelete="CASCADE"), primary_key=True
+    )
 
 
 class CompetencyIpr(Base):
     id = Column(Integer(), nullable=True)
-    competency = Column(String,
-                        ForeignKey("competency.id", ondelete="CASCADE"),
-                        primary_key=True)
-    ipr_id = Column(Integer,
-                    ForeignKey("ipr.id", ondelete="CASCADE"),
-                    primary_key=True)
-    ipr_rel = relationship("Ipr",
-                           back_populates="competency",
-                           lazy="joined")
-    competency_rel = relationship("Competency",
-                                  back_populates="ipr",
-                                  lazy="selectin")
+    competency = Column(
+        String, ForeignKey("competency.id", ondelete="CASCADE"), primary_key=True
+    )
+    ipr_id = Column(Integer, ForeignKey("ipr.id", ondelete="CASCADE"), primary_key=True)
+    ipr_rel = relationship("Ipr", back_populates="competency", lazy="joined")
+    competency_rel = relationship("Competency", back_populates="ipr", lazy="selectin")
 
 
 class Ipr(Base):
@@ -79,9 +73,7 @@ class Ipr(Base):
     goal = relationship("Goal", back_populates="ipr", lazy="joined")
     specialty = relationship("Specialty", back_populates="ipr", lazy="joined")
     status = relationship("Status", back_populates="ipr", lazy="joined")
-    competency = relationship("CompetencyIpr",
-                              back_populates="ipr_rel",
-                              lazy="joined")
+    competency = relationship("CompetencyIpr", back_populates="ipr_rel", lazy="joined")
 
 
 @event.listens_for(Ipr.ipr_status_id, "set")

@@ -16,4 +16,4 @@ from .task import (  # noqa
     TaskStatus,
 )
 from .user import Position, Specialty, User  # noqa
-from .notification import Notification # noqa
+from .notification import Notification  # noqa

@@ -17,7 +17,7 @@ Base = declarative_base(cls=PreBase)
 
 
 class BaseWithName(Base):
-    """ Родительский класс для таблиц с парой полей 'id - название'. """
+    """Родительский класс для таблиц с парой полей 'id - название'."""
 
     __abstract__ = True
 
@@ -26,9 +26,7 @@ class BaseWithName(Base):
 
 engine = create_async_engine(settings.database_url)
 
-AsyncSessionLocal = sessionmaker(engine,
-                                 expire_on_commit=True,
-                                 class_=AsyncSession)
+AsyncSessionLocal = sessionmaker(engine, expire_on_commit=True, class_=AsyncSession)
 
 
 async def get_async_session():

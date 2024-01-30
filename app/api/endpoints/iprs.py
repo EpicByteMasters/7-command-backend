@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -16,14 +15,15 @@ router = APIRouter()
     "/",
     response_model=list[IprsOut],
     response_model_exclude_none=True,
-    dependencies=[Depends(current_user)]
+    dependencies=[Depends(current_user)],
 )
-async def get_iprs(take: int,
-                   skip: int,
-                   statusipr: str = None,
-                   user: User = Depends(current_user),
-                   session: AsyncSession = Depends(get_async_session),
-                   ):
+async def get_iprs(
+    take: int,
+    skip: int,
+    statusipr: str = None,
+    user: User = Depends(current_user),
+    session: AsyncSession = Depends(get_async_session),
+):
     """
     Получить список ИПР руководителя,
     используя ограничение количества результатов и смещение
@@ -41,27 +41,31 @@ async def get_iprs(take: int,
             task_count += 1
             if r_task.task_status_id == "COMPLETED":
                 task_completed += 1
-        progress = str(task_completed) + '/' + str(task_count)
+        progress = str(task_completed) + "/" + str(task_count)
         r_user = await user_crud.get(ipr.employee_id, session)
         if ipr.close_date:
             r_date = ipr.close_date.strftime("%d-%m-%Y")
         else:
             r_date = None
-        resalt.append({"id": r_user.id,
-                       "firstName": r_user.first_name,
-                       "lastName": r_user.surname,
-                       "middleName": r_user.patronymic,
-                       "position_id": r_user.position_id,
-                       "specialty_id": r_user.specialty_id,
-                       "imageUrl": r_user.image_url,
-                       "goal": ipr.goal_id,
-                       "date_of_end": r_date,
-                       "progress": progress,
-                       "task_completed": task_completed,
-                       "task_count": task_count,
-                       "status": ipr.ipr_status_id})
+        resalt.append(
+            {
+                "id": r_user.id,
+                "firstName": r_user.first_name,
+                "lastName": r_user.surname,
+                "middleName": r_user.patronymic,
+                "position_id": r_user.position_id,
+                "specialty_id": r_user.specialty_id,
+                "imageUrl": r_user.image_url,
+                "goal": ipr.goal_id,
+                "date_of_end": r_date,
+                "progress": progress,
+                "task_completed": task_completed,
+                "task_count": task_count,
+                "status": ipr.ipr_status_id,
+            }
+        )
         total_count += 1
 
     return JSONResponse(
-        status_code=200,
-        content={"employees": resalt, "total_count": total_count})
+        status_code=200, content={"employees": resalt, "total_count": total_count}
+    )
