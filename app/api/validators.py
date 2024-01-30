@@ -15,6 +15,11 @@ def check_ipr_user(ipr: Ipr,
             detail="У вас нет прав модифицировать/удалять данный ИПР",
         )
 
+def check_user_is_ipr_mentor_or_supervisor(ipr: Ipr, user: User) -> None:
+    if ipr.supervisor_id != user.id or ipr.mentor_id != user.id:
+        raise HTTPException(HTTPStatus.FORBIDDEN,
+                            detail="У вас нет прав модифицировать/удалять данный ИПР")
+
 
 def check_user_is_supervisor_in_ipr(ipr: Ipr,
                                     user: User) -> None:

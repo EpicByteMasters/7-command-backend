@@ -124,3 +124,9 @@ class IprsOut(BaseModel):
         orm_mode = True
         alias_generator = to_camel
         allow_population_by_field_name = True
+
+
+class IprComplete(BaseModel):
+    ipr_status: str
+    ipr_grade: int
+    supervisor_comment: str

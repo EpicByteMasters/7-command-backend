@@ -6,23 +6,24 @@ from fastapi import APIRouter, Depends
 
 from app.api.validators import (
     check_ipr_is_draft,
-    check_user_is_ipr_supervisor,
+    # check_user_is_ipr_supervisor,
     check_user_is_supervisor,
     check_current_user_is_employees_supervisor,
-    check_user_is_ipr_employee_or_supervisor,
+    # check_user_is_ipr_employee_or_supervisor,
 )
-from app.api.utils import add_competencies, update_tasks
+from app.api.utils import (add_competencies, update_tasks)
 from app.core.db import get_async_session
 from app.core.user import current_user
 from app.crud import ipr_crud
 from app.models.user import User
 from app.schemas.ipr import (
     IprListRead,
-    IprDraftDB,
+    # IprDraftDB,
     IprDraftCreate,
     IprDraftUpdate,
     IprDraftUpdateInput,
-    IprUpdate
+    # IprUpdate,
+    IprComplete
 )
 
 
@@ -161,3 +162,14 @@ async def remove_ipr(ipr_id: int,
     check_user_is_ipr_supervisor(ipr, user)
     await ipr_crud.remove_ipr(user, ipr_id, session)
     return Response(status_code=HTTPStatus.NO_CONTENT)
+
+
+@router.patch('/{ipr_id}/complete',
+              dependencies=[Depends(current_user)],
+              tags=['ИПР'])
+async def ipr_complete(ipr_id: int,
+                       ipr_patch: IprComplete,
+                       user: User = Depends(current_user),
+                       session: AsyncSession = Depends(get_async_session)):
+
+    return HTTPStatus.OK
