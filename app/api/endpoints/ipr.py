@@ -9,7 +9,7 @@ from app.api.validators import (
     check_user_is_ipr_supervisor,
     check_user_is_supervisor,
     check_current_user_is_employees_supervisor,
-    check_user_is_ipr_employee_or_supervisor,
+    check_user_is_ipr_mentor_or_supervisor,
 )
 from app.api.utils import add_competencies, update_tasks
 from app.core.db import get_async_session
@@ -22,7 +22,8 @@ from app.schemas.ipr import (
     IprDraftCreate,
     IprDraftUpdate,
     IprDraftUpdateInput,
-    IprUpdate
+    IprUpdate,
+    IprStatusPatch
 )
 
 
@@ -99,7 +100,7 @@ async def get_ipr(ipr_id: int,
                   user: User = Depends(current_user),
                   session: AsyncSession = Depends(get_async_session)):
     ipr = await ipr_crud.check_ipr_exists(ipr_id, session)
-    check_user_is_ipr_employee_or_supervisor(ipr, user)
+    check_user_is_ipr_mentor_or_supervisor(ipr, user)
     return ipr
 
 
@@ -149,6 +150,21 @@ async def start_ipr(ipr_id: int,
     print(ipr.goal)
     ipr = await ipr_crud.update(update_data_in, ipr, session)
     return ipr
+
+
+@router.patch('/{ipr_id}/cancel',
+              dependencies=[Depends(current_user)],
+              # status_code=HTTPStatus.OK,
+              tags=['ИПР'])
+async def cancel_ipr(ipr_id=int,
+                     # status_data=IprStatusPatch,
+                     user: User = Depends(current_user),
+                     session: AsyncSession = Depends(get_async_session)):
+    ipr = await ipr_crud.get_ipr_by_id(ipr_id, session)
+    check_user_is_ipr_mentor_or_supervisor(ipr, user)
+    await ipr_crud.to_cancel(ipr, session)
+    return HTTPStatus.OK
+
 
 
 @router.post("/{ipr_id}",

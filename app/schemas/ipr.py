@@ -157,3 +157,7 @@ class IprUpdate(BaseModel):
     comment: Optional[str]
     tasks: Optional[list[TaskCreateInput]]
     supervisor_comment: Optional[str]
+
+
+class IprStatusPatch(BaseModel):
+    ipr_status_id: Optional[str]
