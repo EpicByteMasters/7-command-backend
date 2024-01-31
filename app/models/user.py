@@ -8,13 +8,13 @@ from app.core.db import Base, BaseWithName
 
 class Position(BaseWithName):
     id = Column(String, primary_key=True)
-    user = relationship("User", back_populates="position", lazy="joined")
+    user = relationship("User")
 
 
 class Specialty(BaseWithName):
     id = Column(String, primary_key=True)
-    ipr = relationship("Ipr", back_populates="specialty", lazy="joined")
-    user = relationship("User", back_populates="specialty", lazy="joined")
+    ipr = relationship("Ipr")
+    user = relationship("User")
 
 
 class User(SQLAlchemyBaseUserTable[int], Base):
@@ -26,7 +26,7 @@ class User(SQLAlchemyBaseUserTable[int], Base):
     supervisor_id = Column(Integer, ForeignKey("user.id"), nullable=True)
     image_url = Column(String(), nullable=True)
     notifications = relationship("Notification", back_populates="user")
-    specialty = relationship("Specialty", back_populates="user", lazy="selectin")
-    position = relationship("Position", back_populates="user", lazy="selectin")
+    specialty = relationship("Specialty", back_populates="user", lazy="joined")
+    position = relationship("Position", back_populates="user", lazy="joined")
     is_mentor = Column(Boolean(), server_default=false())
     is_supervisor = Column(Boolean())

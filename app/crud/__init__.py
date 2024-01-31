@@ -8,6 +8,7 @@ from .ipr import (  # noqa
 from .task import (  # noqa
     education_crud,
     education_task_crud,
+    file_crud,
     task_crud,
     task_status_crud,
 )

@@ -16,12 +16,13 @@ from app.core.db import Base, BaseWithName
 
 class TaskStatus(BaseWithName):
     id = Column(String, primary_key=True)
-    task = relationship("Task", back_populates="task_status")
+    task = relationship("Task")
 
 
 class TaskFile(BaseWithName):
     url_link = Column(String())
-    task = relationship("Task", back_populates="file")
+    ipr_id = Column(Integer, ForeignKey("task.id", ondelete="CASCADE"))
+    task = relationship("Task")
 
 
 class EducationTask(Base):
@@ -42,15 +43,20 @@ class EducationTask(Base):
 class Task(BaseWithName):
     close_date = Column(Date(), nullable=True)
     description = Column(Text(), nullable=False)
-    comment = Column(Text(), nullable=True)
-    supervisor_comment = Column(Text(), nullable=True)
-    task_status_id = Column(String, ForeignKey("taskstatus.id"), default="IN_PROGRESS")
-    file_id = Column(Integer, ForeignKey("taskfile.id"), nullable=True)
-    ipr_id = Column(Integer, ForeignKey("ipr.id"), nullable=False)
+    comment = Column(Text(length=96), nullable=True)
+    supervisor_comment = Column(Text(length=96), nullable=True)
+    task_status_id = Column(String,
+                            ForeignKey("taskstatus.id"),
+                            default="IN_PROGRESS")
+    ipr_id = Column(Integer,
+                    ForeignKey("ipr.id", ondelete="CASCADE"),
+                    nullable=False)
     ipr = relationship("Ipr", back_populates="task")
-    education = relationship("EducationTask", back_populates="task", lazy="selectin")
-    file = relationship("TaskFile", back_populates="task")
-    task_status = relationship("TaskStatus", back_populates="task")
+    education = relationship("EducationTask",
+                             back_populates="task",
+                             lazy="joined")
+    file = relationship("TaskFile", back_populates="task", lazy="joined")
+    task_status = relationship("TaskStatus", back_populates="task", lazy="joined")
     notifications = relationship("Notification", back_populates="task")
 
 
