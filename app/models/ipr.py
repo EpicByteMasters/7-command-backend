@@ -34,12 +34,12 @@ class Status(BaseWithName):
 
 class CompetencySpecialty(Base):
     id = Column(Integer(), nullable=True)
-    specialty = Column(String,
-                       ForeignKey("specialty.id", ondelete="CASCADE"),
-                       primary_key=True)
-    competency = Column(String,
-                        ForeignKey("competency.id", ondelete="CASCADE"),
-                        primary_key=True)
+    specialty = Column(
+        String, ForeignKey("specialty.id", ondelete="CASCADE"), primary_key=True
+    )
+    competency = Column(
+        String, ForeignKey("competency.id", ondelete="CASCADE"), primary_key=True
+    )
 
 
 class CompetencyIpr(Base):
@@ -75,9 +75,7 @@ class Ipr(Base):
     goal = relationship("Goal", back_populates="ipr", lazy="joined")
     specialty = relationship("Specialty", back_populates="ipr", lazy="joined")
     status = relationship("Status", back_populates="ipr", lazy="joined")
-    competency = relationship("CompetencyIpr",
-                              back_populates="ipr_rel",
-                              lazy="joined")
+    competency = relationship("CompetencyIpr", back_populates="ipr_rel", lazy="joined")
 
 
 @event.listens_for(Ipr.ipr_status_id, "set")

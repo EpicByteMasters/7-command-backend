@@ -10,8 +10,8 @@ from app.api.validators import (
     check_ipr_is_draft,
     check_user_exists,
     check_user_is_ipr_supervisor,
-    check_user_is_ipr_employee,
     check_user_is_supervisor,
+    check_user_is_ipr_mentor_or_supervisor,
 )
 from app.api.utils import (
     add_competencies,
@@ -30,7 +30,8 @@ from app.schemas.ipr import (
     IprDraftUpdate,
     IprDraftUpdateInput,
     IprUpdate,
-    IprUpdateEmployee
+    IprUpdateEmployee,
+    # IprStatusPatch
 )
 
 
@@ -57,12 +58,14 @@ async def create_new_ipr(draft_ipr: IprDraftCreate,
     return ipr_draft
 
 
-@router.get("/employees/my_iprs",
-            response_model=list[IprListRead],
-            response_model_exclude_none=True,
-            status_code=HTTPStatus.OK,
-            dependencies=[Depends(current_user)],
-            tags=['ИПР'])
+@router.get(
+    "/employees/my_iprs",
+    response_model=list[IprListRead],
+    response_model_exclude_none=True,
+    status_code=HTTPStatus.OK,
+    dependencies=[Depends(current_user)],
+    tags=["ИПР"],
+)
 async def get_my_iprs(
     user: User = Depends(current_user),
     session: AsyncSession = Depends(get_async_session),
@@ -95,8 +98,7 @@ async def save_draft(ipr_id: int,
     return ipr
 
 
-@router.get("/test-list-iprs",
-            response_model=list[IprDraftDB])
+@router.get("/test-list-iprs", response_model=list[IprDraftDB])
 async def get_all_iprs(session: AsyncSession = Depends(get_async_session)):
     """Отладочный эндпоинт"""
     iprs = await ipr_crud.get_multi(session)
@@ -125,7 +127,7 @@ async def get_ipr_supervisor(ipr_id: int,
                              user: User = Depends(current_user),
                              session: AsyncSession = Depends(get_async_session)):
     ipr = await ipr_crud.check_ipr_exists(ipr_id, session)
-    check_user_is_ipr_employee(ipr, user)
+    check_user_is_ipr_mentor_or_supervisor(ipr, user)
     return ipr
 
 
@@ -225,12 +227,33 @@ async def start_ipr(ipr_id: int,
     return ipr
 
 
+@router.patch(
+    "/{ipr_id}/cancel",
+    dependencies=[Depends(current_user)],
+    # status_code=HTTPStatus.OK,
+    tags=["ИПР"],
+)
+async def cancel_ipr(
+    ipr_id=int,
+    # status_data=IprStatusPatch,
+    user: User = Depends(current_user),
+    session: AsyncSession = Depends(get_async_session),
+):
+    ipr = await ipr_crud.get_ipr_by_id(ipr_id, session)
+    check_user_is_ipr_mentor_or_supervisor(ipr, user)
+    await ipr_crud.to_cancel(ipr, session)
+    return HTTPStatus.OK
+
+
 @router.post("/{ipr_id}/delete",
              dependencies=[Depends(current_user)],
-             tags=['ИПР'])
-async def remove_ipr(ipr_id: int,
-                     user: User = Depends(current_user),
-                     session: AsyncSession = Depends(get_async_session)):
+             tags=["ИПР"]
+)
+async def remove_ipr(
+    ipr_id: int,
+    user: User = Depends(current_user),
+    session: AsyncSession = Depends(get_async_session),
+):
     ipr = await ipr_crud.check_ipr_exists(ipr_id, session)
     check_user_is_ipr_supervisor(ipr, user)
     await ipr_crud.remove_ipr(ipr_id, session)

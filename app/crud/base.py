@@ -1,3 +1,6 @@
+from http import HTTPStatus
+
+from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,7 +18,7 @@ class CRUDBase:
 
     async def get_multi(self, session: AsyncSession):
         all_objects = await session.execute(select(self.model))
-        return all_objects.unique().scalars().all()
+        return all_objects.scalars().all()
 
     async def create(
         self,
@@ -46,3 +49,14 @@ class CRUDBase:
         await session.delete(db_obj)
         await session.commit()
         return db_obj
+
+    async def get_id_by_name(self, name, session: AsyncSession):
+        query = select(self.model.id).where(self.model.name == name)
+        id = await session.execute(query)
+        id = id.scalars().first()
+        if id is None:
+            raise HTTPException(
+                HTTPStatus.UNPROCESSABLE_ENTITY,
+                f"Экземпляра модели {self.model.__tablename__} с таким именем не существует",
+            )
+        return id

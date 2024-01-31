@@ -14,10 +14,7 @@ from app.models.task import (
 
 
 class EducationTaskCRUD(CRUDBase):
-
-    async def remove_all_educations_from_task(self,
-                                              task_id,
-                                              session: AsyncSession):
+    async def remove_all_educations_from_task(self, task_id, session: AsyncSession):
         query = delete(EducationTask).where(EducationTask.task_id == task_id)
         await session.execute(query)
         await session.commit()
@@ -25,11 +22,10 @@ class EducationTaskCRUD(CRUDBase):
 
 
 class TaskCrud(CRUDBase):
-
     async def patch_task_awaiting_review(
-            self,
-            task_id: int,
-            session: AsyncSession,
+        self,
+        task_id: int,
+        session: AsyncSession,
     ) -> Optional[Task]:
         task = await task_crud.get(task_id, session=session)
         task.task_status = "AWAITING_REVIEW"
@@ -50,6 +46,11 @@ class TaskCrud(CRUDBase):
         result = await session.execute(query)
         result = result.scalar()
         return result
+
+    async def get_multi_task_by_iprid(self, ipr_id: int, session: AsyncSession):
+        query = select(self.model).where(self.model.ipr_id == ipr_id)
+        all_objects = await session.execute(query)
+        return all_objects.scalars().all()
 
 
 task_crud = TaskCrud(Task)

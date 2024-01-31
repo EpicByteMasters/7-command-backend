@@ -17,7 +17,7 @@ Base = declarative_base(cls=PreBase)
 
 
 class BaseWithName(Base):
-    """ Родительский класс для таблиц с парой полей 'id - название'. """
+    """Родительский класс для таблиц с парой полей 'id - название'."""
 
     __abstract__ = True
 
