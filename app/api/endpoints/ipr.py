@@ -80,7 +80,7 @@ async def get_my_iprs(
     session: AsyncSession = Depends(get_async_session),
 ):
     iprs = await ipr_crud.get_users_ipr(user, session)
-    return jsonable_encoder(iprs)
+    return iprs
 
 
 @router.patch("/{ipr_id}/save-draft",
