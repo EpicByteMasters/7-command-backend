@@ -1,0 +1,24 @@
+aiohttp==3.8.1; python_version >= '3.6'
+aiosignal==1.2.0; python_version >= '3.6'
+aiosqlite==0.17.0
+alembic==1.7.7
+fastapi-users-db-sqlalchemy==4.0.3
+fastapi-users[sqlalchemy]==10.0.4
+fastapi==0.78.0
+pydantic==1.9.1
+python-dateutil==2.8.2
+python-dotenv==0.20.0
+python-multipart==0.0.5
+pyyaml==6.0
+requests==2.27.1
+rsa==4.8; python_version >= '3.6'
+six==1.16.0
+sniffio==1.2.0
+sqlalchemy==1.4.36
+starlette==0.19.1
+toml==0.10.2
+tonyg-rfc3339==0.1
+typing-extensions==4.2.0
+urllib3==1.26.9
+uvicorn[standard]==0.17.6
+pre-commit==3.6.0
