@@ -8,7 +8,6 @@ from app.crud import (
     file_crud,
     task_crud,
     user_crud,
-    ipr_crud,
 )
 from app.models import Ipr
 from app.schemas.task import FileCreate, TaskCreate, EduTaskCreate
