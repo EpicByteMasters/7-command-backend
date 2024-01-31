@@ -7,6 +7,7 @@ from .utils import to_camel
 
 
 class IprStatusDB(BaseModel):
+    id: str
     name: str
 
     class Config:
@@ -17,11 +18,8 @@ class IprGoalDB(IprStatusDB):
     pass
 
 
-class SpecialtyDB(BaseModel):
-    name: str
-
-    class Config:
-        orm_mode = True
+class SpecialtyDB(IprStatusDB):
+    pass
 
 
 class PositionDB(SpecialtyDB):
@@ -37,6 +35,7 @@ class UserRead(schemas.BaseUser[int]):
     specialty: SpecialtyDB
     supervisor_id: int
     is_supervisor: bool
+    is_mentor: bool
 
     class Config:
         alias_generator = to_camel

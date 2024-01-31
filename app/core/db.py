@@ -27,7 +27,7 @@ class BaseWithName(Base):
 engine = create_async_engine(settings.database_url)
 
 AsyncSessionLocal = sessionmaker(engine,
-                                 expire_on_commit=True,
+                                 expire_on_commit=False,
                                  class_=AsyncSession)
 
 

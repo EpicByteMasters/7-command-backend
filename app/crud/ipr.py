@@ -2,20 +2,20 @@ from typing import Optional
 from http import HTTPStatus
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import and_, delete, desc, select
+from sqlalchemy import and_, desc, select
 from fastapi import HTTPException
 
 from app.crud.base import CRUDBase
 from app.models import (
     Competency,
     CompetencyIpr,
-    EducationTask,
     Goal,
     Ipr,
     Status,
     Task,
     User
 )
+from app.schemas.ipr import CompetencyIprCreate
 
 
 class IPRCrud(CRUDBase):
@@ -82,26 +82,12 @@ class IPRCrud(CRUDBase):
         return ipr
 
     async def remove_ipr(self,
-                         user: User,
                          ipr_id: int,
                          session: AsyncSession):
         ipr = await self.get_ipr_by_id(ipr_id, session)
-        await self.check_ipr_user(ipr, user)
         ipr.is_deleted = True
         session.add(ipr)
         await session.commit()
-        return
-
-    async def remove_all_tasks_from_ipr(self, ipr_id, session: AsyncSession):
-        ipr_tasks = select(Task.id).where(Task.ipr_id == ipr_id)
-        ipr_tasks = await session.execute(ipr_tasks)
-        ipr_tasks = ipr_tasks.scalars().all()
-        for task_id in ipr_tasks:
-            await session.execute(delete(
-                EducationTask).where(
-                    EducationTask.task_id == task_id))
-        query_tasks = delete(Task).where(Task.ipr_id == ipr_id)
-        await session.execute(query_tasks)
         return
 
     async def check_user_does_not_have_active_iprs(self,
@@ -117,6 +103,21 @@ class IPRCrud(CRUDBase):
                                 detail="Этот пользователь уже имеет активный ИПР")
         return
 
+    async def check_user_does_not_have_draft_iprs(self,
+                                                  user_id: int,
+                                                  session: AsyncSession):
+        query = select(Ipr).where(
+            and_(Ipr.ipr_status_id == "DRAFT",
+                 Ipr.employee_id == user_id))
+        result = await session.execute(query)
+        result = result.scalar()
+        if result:
+            raise HTTPException(
+                status_code=HTTPStatus.BAD_REQUEST,
+                detail="Для этого пользователя уже создан черновик ИПР"
+            )
+        return
+
     async def to_work(self, ipr: Ipr, session: AsyncSession):
         ipr.ipr_status_id = "IN_PROGRESS"
         query = select(Task.close_date).where(
@@ -128,14 +129,51 @@ class IPRCrud(CRUDBase):
         session.add(ipr)
         return ipr
 
+    async def update_ipr(self, obj_in, db_obj, session: AsyncSession):
+        if isinstance(obj_in, dict):
+            update_data = obj_in
+        else:
+            update_data = obj_in.dict(exclude_unset=True, exclude_none=True)
+        for field in update_data:
+            setattr(db_obj, field, update_data[field])
+        session.add(db_obj)
+        await session.commit()
+        await session.refresh(db_obj)
+        return db_obj
+
 
 class CompetencyIprCrud(CRUDBase):
 
-    async def remove_all_competencies_from_ipr(self, ipr_id, session: AsyncSession):
-        query = delete(CompetencyIpr).where(CompetencyIpr.ipr_id == ipr_id)
-        await session.execute(query)
-        await session.commit()
-        return
+    async def update_competencies(self,
+                                  ipr_id,
+                                  data_in,
+                                  session: AsyncSession):
+        query_out = (
+            select(CompetencyIpr)
+            .where(CompetencyIpr.competency.not_in(data_in),
+                   CompetencyIpr.ipr_id == ipr_id)
+        )
+        query_in = (
+            select(Competency.id)
+            .join(CompetencyIpr, CompetencyIpr.competency == Competency.id)
+            .where(CompetencyIpr.ipr_id == ipr_id)
+        )
+        result_out = await session.execute(query_out)
+        result_out = result_out.scalars().all()
+        result_in = await session.execute(query_in)
+        result_in = result_in.scalars().all()
+
+        for obj in result_out:
+            await session.delete(obj)
+
+        for competency in data_in:
+            if competency not in result_in:
+                create_dict = {
+                    "competency": competency,
+                    "ipr_id": ipr_id
+                }
+                data_in = CompetencyIprCreate.parse_obj(create_dict)
+                await competency_ipr_crud.create(data_in, session)
 
 
 status_crud = IPRCrud(Status)
