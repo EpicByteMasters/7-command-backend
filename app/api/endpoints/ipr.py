@@ -9,6 +9,7 @@ from app.api.validators import (
     check_current_user_is_employees_supervisor,
     check_ipr_is_draft,
     check_user_exists,
+    check_user_is_ipr_employee,
     check_user_is_ipr_supervisor,
     check_user_is_supervisor,
     check_user_is_ipr_mentor_or_supervisor,
@@ -118,14 +119,14 @@ async def get_ipr_by_supervisor(ipr_id: int,
     return ipr
 
 
-@router.get('/employee/{ipr_id}/',  #  что то одно +1 ниже
+@router.get('/employee/{ipr_id}/',
             response_model=IprDraftDB,
             response_model_exclude_none=True,
             tags=['ИПР'],
             dependencies=[Depends(current_user)])
-async def get_ipr_supervisor(ipr_id: int,
-                             user: User = Depends(current_user),
-                             session: AsyncSession = Depends(get_async_session)):
+async def get_ipr_employee(ipr_id: int,
+                           user: User = Depends(current_user),
+                           session: AsyncSession = Depends(get_async_session)):
     ipr = await ipr_crud.check_ipr_exists(ipr_id, session)
     check_user_is_ipr_mentor_or_supervisor(ipr, user)
     return ipr
@@ -247,8 +248,7 @@ async def cancel_ipr(
 
 @router.post("/{ipr_id}/delete",
              dependencies=[Depends(current_user)],
-             tags=["ИПР"]
-)
+             tags=["ИПР"])
 async def remove_ipr(
     ipr_id: int,
     user: User = Depends(current_user),
