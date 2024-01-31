@@ -136,7 +136,7 @@ class CompetencyIprCreate(BaseModel):
 class IprUpdate(BaseModel):
     ipr_status_id: Optional[str]
     goal_id: Optional[str]
-    competency_id: Optional[list[str]]
+    competency: Optional[list[str]]
     specialty_id: Optional[str]
     mentor_id: Optional[int]
     description: Optional[str]
@@ -161,8 +161,8 @@ class FileCreateEmployee(BaseModel):
 
 class TaskUpdateEmployee(BaseModel):
     id: int
-    comment: str
-    file: list[FileCreateEmployee]
+    comment: Optional[str]
+    file: Optional[list[FileCreateEmployee]]
 
 
 class IprUpdateEmployee(BaseModel):

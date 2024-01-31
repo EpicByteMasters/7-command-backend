@@ -1,6 +1,6 @@
 from typing import Optional
 
-from sqlalchemy import and_, delete, select
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .base import CRUDBase
@@ -14,11 +14,23 @@ from app.models.task import (
 
 
 class EducationTaskCRUD(CRUDBase):
-    async def remove_all_educations_from_task(self, task_id, session: AsyncSession):
-        query = delete(EducationTask).where(EducationTask.task_id == task_id)
-        await session.execute(query)
-        await session.commit()
-        return
+
+    async def get_or_create(self,
+                            education_id,
+                            task_id,
+                            schema,
+                            session: AsyncSession):
+        query = (
+            select(EducationTask)
+            .where(EducationTask.education_id == education_id,
+                   EducationTask.task_id == task_id)
+        )
+        result = await session.execute(query)
+        result = result.scalar()
+        if result is not None:
+            return
+        obj = self.create(schema, session)
+        return obj
 
 
 class TaskCrud(CRUDBase):

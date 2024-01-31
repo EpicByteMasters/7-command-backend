@@ -39,7 +39,7 @@ async def create_tasks(new_draft_dict: dict, ipr_id, session) -> dict:
     if tasks is None:
         return new_draft_dict
     for task in tasks:
-        educations = task.pop("educations")
+        educations = task.pop("education")
         task["ipr_id"] = ipr_id
         new_task = TaskCreate.parse_obj(task)
         task = await task_crud.create(new_task, session)
@@ -48,7 +48,10 @@ async def create_tasks(new_draft_dict: dict, ipr_id, session) -> dict:
             for education_id in educations:
                 education_task = {"task_id": task_id, "education_id": education_id}
                 eduSchema = EduTaskCreate.parse_obj(education_task)
-                await education_task_crud.create(eduSchema, session)
+                await education_task_crud.get_or_create(education_id,
+                                                        task_id,
+                                                        eduSchema,
+                                                        session)
     return new_draft_dict
 
 
@@ -73,7 +76,7 @@ async def update_tasks(draft_dict: dict, ipr_id, session) -> dict:
             task = await task_crud.update(updated_data, old_task, session)
 
         if educations is None:
-            return draft_dict
+            continue
         for education_id in educations:
             education_task = {
                 "task_id": task.id,

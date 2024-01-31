@@ -66,6 +66,8 @@ class TaskCreate(TaskBase):
     supervisor_comment: Optional[str] = Field(None, max_length=96)
     education: Optional[list[int]]
     ipr_id: Optional[int]
+    comment: Optional[str]
+    task_status_id: Optional[str]
 
 
 class TaskStatusDB(BaseModel):
@@ -94,6 +96,7 @@ class TaskCreateInput(TaskBase):
     id: Optional[int] = None
     education: Optional[list[int]]
     supervisor_comment: Optional[str] = Field(None, max_length=96)
+    task_status_id: Optional[str]
 
     class Config:
         alias_generator = to_camel

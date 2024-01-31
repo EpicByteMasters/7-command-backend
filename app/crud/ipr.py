@@ -1,8 +1,8 @@
-import datetime
+from datetime import date
 from http import HTTPStatus
 from typing import Optional
 
-from sqlalchemy import and_, delete, desc, select
+from sqlalchemy import and_, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException
 
@@ -181,11 +181,12 @@ class IPRCrud(CRUDBase):
     async def to_cancel(self, ipr: Ipr, session: AsyncSession):
         ipr.ipr_status_id = "CANCELED"
         query = (
-            select(Task).where(Task.ipr_id == ipr.id).order_by(desc(Task.close_date))
+            select(Task).where(Task.ipr_id == ipr.id,
+                               Task.task_status_id == "IN_PROGRESS")
         )
-        tasks = (await session.execute(query)).scalars().all()
+        tasks = (await session.execute(query)).unique().scalars().all()
         for task in tasks:
-            task.close_date = datetime.date.today()
+            task.close_date = date.today()
             task.task_status_id = "CANCELED"
             session.add(task)
         session.add(ipr)
