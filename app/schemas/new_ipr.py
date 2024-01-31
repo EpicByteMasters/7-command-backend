@@ -141,7 +141,7 @@ class IPREmployeeOut(BaseOut):
     id: int
     employee_id: int
     supervisor_id: int
-    mentor_id: int
+    mentor_id: Optional[int]
     status: IPRStatusOut
     goal: IPRGoalOut
     specialty: IPRSpecialtyOut
@@ -155,7 +155,7 @@ class IPRSupervisorOut(BaseOut):
     id: int
     employee_id: int
     supervisor_id: int
-    mentor_id: int
+    mentor_id: Optional[int]
     status: IPRStatusOut
     goal: IPRGoalOut
     specialty: IPRSpecialtyOut

@@ -62,7 +62,7 @@ class TaskCrud(CRUDBase):
     async def get_multi_task_by_iprid(self, ipr_id: int, session: AsyncSession):
         query = select(self.model).where(self.model.ipr_id == ipr_id)
         all_objects = await session.execute(query)
-        return all_objects.scalars().all()
+        return all_objects.unique().scalars().all()
 
 
 task_crud = TaskCrud(Task)
