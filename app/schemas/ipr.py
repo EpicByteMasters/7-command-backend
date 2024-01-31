@@ -1,11 +1,11 @@
 from datetime import date
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Extra
 
 from .utils import to_camel
 from app.schemas.task import TaskCreateInput, TaskDB
-from app.schemas.user import SpecialtyDB, UserMentorIpr
+from app.schemas.user import SpecialtyDB
 
 
 class StatusDB(BaseModel):
@@ -34,16 +34,17 @@ class CompetencyDB(BaseModel):
 class IprDraftDB(BaseModel):
     id: int
     status: StatusDB
+    employee_id: int
+    mentor_id: Optional[int]
     competency: list[CompetencyDB]
     supervisor_id: Optional[int]
     goal: Optional[GoalDB]
     specialty: Optional[SpecialtyDB]
     create_date: Optional[date]
     close_date: Optional[date]
-    mentor: Optional[UserMentorIpr]
     description: Optional[str]
-    comment: Optional[str]
     supervisor_comment: Optional[str]
+    comment: Optional[str]
     task: Optional[list[TaskDB]]
 
     class Config:
@@ -104,28 +105,13 @@ class IprDraftUpdateInput(BaseModel):
     competency: Optional[list[str]]
     mentor_id: Optional[int]
     description: Optional[str]
-    comment: Optional[str]
+    supervisor_comment: Optional[str]
     tasks: Optional[list[TaskCreateInput]]
 
     class Config:
+        orm_mode = True
         alias_generator = to_camel
         allow_population_by_field_name = True
-
-    # @validator("comment")
-    # def text_does_not_have_incorrect_symbols(cls, value):
-    #     pattern = re.compile(r'^[a-zA-Zа-яА-ЯёЁ0-9]+$')
-    #     if not pattern.match(value):
-    #         raise ValueError("Использованы некорректные символы")
-    #     return value
-
-    # @validator("close_date")
-    # def close_date_bigger_than_now(cls, value):
-    #     time_now = date.today()
-    #     if value <= time_now:
-    #         raise ValueError(
-    #             "Дата окончания ИПР не должна быть меньше или равна текущей дате"
-    #         )
-    #     return value
 
 
 class IprDraftUpdate(BaseModel):
@@ -133,7 +119,7 @@ class IprDraftUpdate(BaseModel):
     specialty_id: Optional[str]
     mentor_id: Optional[int]
     description: Optional[str]
-    comment: Optional[str]
+    supervisor_comment: Optional[str]
     ipr_status_id: Optional[str]
 
 
@@ -154,9 +140,33 @@ class IprUpdate(BaseModel):
     specialty_id: Optional[str]
     mentor_id: Optional[int]
     description: Optional[str]
-    comment: Optional[str]
+    supervisor_comment: Optional[str]
     tasks: Optional[list[TaskCreateInput]]
     supervisor_comment: Optional[str]
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field = True
+
+
+class FileCreateEmployee(BaseModel):
+    name: str
+    url_link: str
+
+    class Config:
+        extra = Extra.allow
+        alias_generator = to_camel
+        allow_population_by_field = True
+
+
+class TaskUpdateEmployee(BaseModel):
+    id: int
+    comment: Optional[str]
+    file: Optional[list[FileCreateEmployee]]
+
+
+class IprUpdateEmployee(BaseModel):
+    tasks: Optional[list[TaskUpdateEmployee]]
 
 
 class IprStatusPatch(BaseModel):
