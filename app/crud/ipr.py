@@ -39,6 +39,22 @@ class IPRCrud(CRUDBase):
         all_objects = await session.execute(query)
         return all_objects.unique().scalars().all()
 
+    async def get_last_users_ipr(self, user: User, session: AsyncSession):
+        query = (
+            select(Ipr)
+            .where(
+                Ipr.is_deleted == False,  # noqa
+                Ipr.employee_id == user.id,
+            )
+            .order_by(desc(Ipr.create_date))
+            .limit(1)
+        )
+        # Плохо: Ipr.create_date нет у черновика. Но на 1 сотрудника только 1 черновик
+        all_objects = await session.execute(query)
+        if not all_objects:
+            return None
+        return all_objects.scalars().first()
+
     async def check_ipr_exists(self, ipr_id: int, session: AsyncSession) -> Ipr:
         ipr = await self.get_ipr_by_id(ipr_id, session)
         if ipr is None:
@@ -103,15 +119,17 @@ class IPRCrud(CRUDBase):
             )
         return
 
-    async def get_supervisors_ipr(
+    async def get_mentors_iprs(
         self, take: int, skip: int, statusipr, user: User, session: AsyncSession
     ):
+        if take == -1:
+            take = None
         if statusipr:
             query = (
                 select(self.model)
                 .where(
                     self.model.is_deleted == False,  # noqa
-                    self.model.supervisor_id == user.id,
+                    self.model.mentor_id == user.id,
                     self.model.ipr_status == statusipr,
                 )
                 .offset(skip)
@@ -122,7 +140,7 @@ class IPRCrud(CRUDBase):
                 select(self.model)
                 .where(
                     self.model.is_deleted == False,  # noqa
-                    self.model.supervisor_id == user.id,
+                    self.model.mentor_id == user.id,
                 )
                 .offset(skip)
                 .limit(take)

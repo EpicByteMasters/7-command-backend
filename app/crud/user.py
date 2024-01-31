@@ -26,6 +26,13 @@ class CRUDUser(CRUDBase):
             return None
         return user
 
+    async def get_users_by_boss(self, user: User, session: AsyncSession):
+        query = select(self.model).where(
+            self.model.supervisor_id == user.id, self.model.is_supervisor == True
+        )
+        all_objects = await session.execute(query)
+        return all_objects.scalars().all()
+
 
 position_crud = CRUDBase(Position)
 user_crud = CRUDUser(User)

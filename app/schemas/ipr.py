@@ -188,7 +188,8 @@ class IprsOut(BaseModel):
     task_completed: Optional[int]
     task_count: Optional[int]
     status: Optional[str]
-    total_count: Optional[int]
+    total_count_iprs: Optional[int]
+    total_count_employees: Optional[int]
 
     class Config:
         orm_mode = True
