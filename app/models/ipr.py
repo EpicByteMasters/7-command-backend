@@ -11,6 +11,7 @@ from sqlalchemy import (
     String,
     Text,
 )
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
 from app.core.db import Base, BaseWithName
@@ -82,6 +83,11 @@ class Ipr(Base):
                           foreign_keys=[mentor_id],
                           primaryjoin="Ipr.mentor_id == User.id",
                           lazy="joined")
+    task_completed = Column(Integer(), default=0)
+
+    @hybrid_property
+    def task_count(self):
+        return len(self.task)
 
 
 @event.listens_for(Ipr.ipr_status_id, "set")

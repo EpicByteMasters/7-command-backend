@@ -2,6 +2,7 @@ from sqlalchemy import (
     Boolean,
     Column,
     Date,
+    event,
     false,
     ForeignKey,
     Integer,
@@ -42,7 +43,7 @@ class EducationTask(Base):
 
 class Task(BaseWithName):
     close_date = Column(Date(), nullable=True)
-    description = Column(Text(), nullable=True)
+    description = Column(Text(), nullable=False)
     comment = Column(Text(length=96), nullable=True)
     supervisor_comment = Column(Text(length=96), nullable=True)
     task_status_id = Column(String,
@@ -58,6 +59,12 @@ class Task(BaseWithName):
     file = relationship("TaskFile", back_populates="task", lazy="joined")
     task_status = relationship("TaskStatus", back_populates="task", lazy="joined")
     notifications = relationship("Notification", back_populates="task")
+
+
+@event.listens_for(Task.task_status_id, "set")
+def task_counter(target, value, oldvalue, initiator):
+    if value == "COMPLETED":
+        target.ipr.task_completed += 1
 
 
 class Education(BaseWithName):

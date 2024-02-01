@@ -1,22 +1,9 @@
 from datetime import date
 from typing import Optional
 
-from pydantic import BaseModel, Extra, Field
+from pydantic import Extra, Field
 
-from .utils import to_camel
-
-
-class Base(BaseModel):
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-
-
-class BaseOut(Base):
-
-    class Config:
-        orm_mode = True
+from .base import Base, BaseOut
 
 
 class IPRStatusOut(BaseOut):
@@ -61,6 +48,18 @@ class IprListOut(BaseOut):
     status: IPRStatusOut
     create_date: date
     close_date: date
+    task_count: int
+    task_completed: int
+
+
+class IprListSupervisorOut(BaseOut):
+    id: int
+    goal: Optional[IPRGoalOut]
+    status: IPRStatusOut
+    create_date: Optional[date]
+    close_date: Optional[date]
+    task_count: int
+    task_completed: int
 
 
 class TaskFileOut(BaseOut):
@@ -125,8 +124,6 @@ class TaskCreateInput(TaskBase):
     supervisor_comment: Optional[str] = Field(None, max_length=96)
 
     class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
         extra = Extra.allow
 
 

@@ -39,6 +39,16 @@ class IPRCrud(CRUDBase):
         all_objects = await session.execute(query)
         return all_objects.unique().scalars().all()
 
+    async def get_users_ipr_by_supervisor(self,
+                                          user: User,
+                                          session: AsyncSession):
+        query = select(Ipr).where(
+            Ipr.is_deleted == False,  # noqa
+            Ipr.employee_id == user.id
+        )
+        all_objects = await session.execute(query)
+        return all_objects.unique().scalars().all()
+
     async def get_last_users_ipr(self, user: User, session: AsyncSession):
         query = (
             select(Ipr)

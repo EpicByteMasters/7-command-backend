@@ -39,7 +39,8 @@ from app.schemas.new_ipr import (
     IPRDraftOut,
     IPREmployeeOut,
     IPRSupervisorOut,
-    IprListOut
+    IprListOut,
+    IprListSupervisorOut
 )
 
 
@@ -66,7 +67,7 @@ async def create_new_ipr(draft_ipr: IPRDraftCreate,
     return ipr_draft
 
 
-@router.get("/employees/my_iprs",
+@router.get("/employees/my-iprs",
             response_model=list[IprListOut],
             response_model_exclude_none=True,
             status_code=HTTPStatus.OK,
@@ -77,6 +78,20 @@ async def get_my_iprs(
     session: AsyncSession = Depends(get_async_session),
 ):
     iprs = await ipr_crud.get_users_ipr(user, session)
+    return iprs
+
+
+@router.get("/{employee_id}/list-iprs",
+            response_model=list[IprListSupervisorOut],
+            response_model_exclude_none=True,
+            status_code=HTTPStatus.OK,
+            dependencies=[Depends(current_user)])
+async def get_users_iprs(employee_id: int,
+                         user: User = Depends(current_user),
+                         session: AsyncSession = Depends(get_async_session)):
+    employee = await check_user_exists(employee_id, session)
+    await check_current_user_is_employees_supervisor(employee_id, user, session)
+    iprs = await ipr_crud.get_users_ipr_by_supervisor(employee, session)
     return iprs
 
 
@@ -121,7 +136,7 @@ async def get_ipr_by_supervisor(ipr_id: int,
                                 user: User = Depends(current_user),
                                 session: AsyncSession = Depends(get_async_session)):
     ipr = await ipr_crud.check_ipr_exists(ipr_id, session)
-    # check_user_is_ipr_supervisor(ipr, user)
+    check_user_is_ipr_supervisor(ipr, user)
     return ipr
 
 
