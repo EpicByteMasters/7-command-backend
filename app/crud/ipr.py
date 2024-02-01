@@ -99,10 +99,6 @@ class IPRCrud(CRUDBase):
     async def get_ipr_by_id(self, ipr_id: int, session: AsyncSession):
         ipr = await session.execute(select(Ipr).where(Ipr.id == ipr_id))
         ipr = ipr.scalars().first()
-        if ipr is None:
-            raise HTTPException(
-                HTTPStatus.NOT_FOUND, detail=f"IPR с id - {ipr_id} не существует"
-            )
 
         return ipr
 

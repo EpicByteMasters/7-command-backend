@@ -3,7 +3,7 @@ from typing import Optional
 
 from pydantic import Extra, Field
 
-from .base import Base, BaseOut
+from .base import AllOptional, Base, BaseOut
 
 
 class IPRStatusOut(BaseOut):
@@ -158,17 +158,17 @@ class IPREmployeeOut(BaseOut):
     ipr_grade: Optional[int]
 
 
-class IPRSupervisorOut(BaseOut):
+class IPRSupervisorOut(BaseOut, metaclass=AllOptional):
     id: int
     employee_id: int
     supervisor_id: int
-    mentor: Optional[UserMentorOut]
+    mentor: UserMentorOut
     status: IPRStatusOut
     goal: IPRGoalOut
     specialty: IPRSpecialtyOut
     competency: list[IPRCompetencyOut]
-    description: Optional[str]
-    supervisor_comment: Optional[str]
+    description: str
+    supervisor_comment: str
     task: list[IPRTaskOut]
-    comment: Optional[str]
-    ipr_grade: Optional[int]
+    comment: str
+    ipr_grade: int
