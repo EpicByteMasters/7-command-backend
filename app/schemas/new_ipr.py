@@ -153,6 +153,7 @@ class IPREmployeeOut(BaseOut):
     description: Optional[str]
     task: list[IPRTaskOut]
     comment: Optional[str]
+    ipr_grade: Optional[int]
 
 
 class IPRSupervisorOut(BaseOut):
@@ -168,3 +169,4 @@ class IPRSupervisorOut(BaseOut):
     supervisor_comment: Optional[str]
     task: list[IPRTaskOut]
     comment: Optional[str]
+    ipr_grade: Optional[int]
