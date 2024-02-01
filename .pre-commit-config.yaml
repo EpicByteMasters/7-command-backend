@@ -13,8 +13,3 @@ repos:
         exclude: alembic/
     -   id: trailing-whitespace
         exclude: alembic/
--   repo: https://github.com/pycqa/flake8
-    rev: 7.0.0
-    hooks:
-    -   id: flake8
-        exclude: alembic/
