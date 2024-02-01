@@ -145,7 +145,7 @@ class IPREmployeeOut(BaseOut):
     id: int
     employee_id: int
     supervisor_id: int
-    mentor_id: Optional[int]
+    mentor: Optional[UserMentorOut]
     create_date: date
     close_date: date
     status: IPRStatusOut

@@ -130,7 +130,7 @@ async def get_all_iprs(session: AsyncSession = Depends(get_async_session)):
     return iprs
 
 
-@router.get('/supervisor/{ipr_id}',
+@router.get('/{ipr_id}/supervisor',
             response_model=IPRSupervisorOut,
             response_model_exclude_none=True,
             tags=['ИПР'],
@@ -143,7 +143,7 @@ async def get_ipr_by_supervisor(ipr_id: int,
     return ipr
 
 
-@router.get('/employee/{ipr_id}/',
+@router.get('/{ipr_id}/employee',
             response_model=IPREmployeeOut,
             response_model_exclude_none=True,
             tags=['ИПР'],
@@ -210,7 +210,7 @@ async def edit_ipr_by_employee(ipr_id: int,
 
 
 @router.patch("/{ipr_id}/start-ipr",
-              response_model=IprDraftDB,
+              response_model=IPRSupervisorOut,
               response_model_exclude_none=False,
               dependencies=[Depends(current_user)],
               status_code=HTTPStatus.CREATED,
@@ -263,7 +263,7 @@ async def cancel_ipr(ipr_id=int,
     check_user_is_ipr_mentor_or_supervisor(ipr, user)
     check_ipr_is_in_progress(ipr)
     await ipr_crud.to_cancel(ipr, session)
-    return HTTPStatus.OK
+    return Response(status_code=HTTPStatus.OK)
 
 
 @router.patch("/{ipr_id}/delete",
@@ -291,4 +291,4 @@ async def ipr_complete(ipr_id: int,
     check_user_is_ipr_mentor_or_supervisor(ipr, user)
     check_ipr_is_in_progress(ipr)
     await ipr_crud.to_complete(ipr_patch, ipr_id, session)
-    return HTTPStatus.OK
+    return Response(status_code=HTTPStatus.OK)
