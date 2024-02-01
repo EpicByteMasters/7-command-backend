@@ -134,13 +134,13 @@ class CompetencyIprCreate(BaseModel):
 
 
 class IprUpdate(BaseModel):
-    ipr_status_id: Optional[str]
+    # ipr_status_id: Optional[str]
     goal_id: Optional[str]
     competency: Optional[list[str]]
     specialty_id: Optional[str]
     mentor_id: Optional[int]
     description: Optional[str]
-    supervisor_comment: Optional[str]
+    # supervisor_comment: Optional[str]
     tasks: Optional[list[TaskCreateInput]]
     supervisor_comment: Optional[str]
 
@@ -169,10 +169,6 @@ class IprUpdateEmployee(BaseModel):
     tasks: Optional[list[TaskUpdateEmployee]]
 
 
-class IprStatusPatch(BaseModel):
-    ipr_status_id: Optional[str]
-
-
 class IprsOut(BaseModel):
     id: Optional[int]
     first_name: Optional[str]
@@ -180,7 +176,6 @@ class IprsOut(BaseModel):
     middle_name: Optional[str]
     position_id: Optional[str]
     specialty_id: Optional[str]
-    image_url: Optional[str]
 
     goal: Optional[str]
     date_of_end: Optional[str]
@@ -190,6 +185,10 @@ class IprsOut(BaseModel):
     status: Optional[str]
     total_count_iprs: Optional[int]
     total_count_employees: Optional[int]
+
+
+class IprStatusPatch(BaseModel):
+    ipr_status_id: Optional[str]
 
     class Config:
         orm_mode = True
