@@ -145,7 +145,9 @@ class IPREmployeeOut(BaseOut):
     id: int
     employee_id: int
     supervisor_id: int
-    mentor: Optional[UserMentorOut]
+    mentor_id: Optional[int]
+    create_date: date
+    close_date: date
     status: IPRStatusOut
     goal: IPRGoalOut
     specialty: IPRSpecialtyOut
