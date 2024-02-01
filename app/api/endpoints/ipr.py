@@ -1,7 +1,6 @@
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, Response
-from fastapi.encoders import jsonable_encoder
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends
 
@@ -43,7 +42,8 @@ from app.schemas.new_ipr import (
     IPRDraftOut,
     IPREmployeeOut,
     IPRSupervisorOut,
-    IprListOut
+    IprListOut,
+    IprListSupervisorOut
 )
 
 
@@ -70,19 +70,31 @@ async def create_new_ipr(draft_ipr: IPRDraftCreate,
     return ipr_draft
 
 
-@router.get(
-    "/employees/my_iprs",
-    response_model=list[IprListOut],
-    response_model_exclude_none=True,
-    status_code=HTTPStatus.OK,
-    dependencies=[Depends(current_user)],
-    tags=["ИПР"],
-)
+@router.get("/employees/my-iprs",
+            response_model=list[IprListOut],
+            response_model_exclude_none=True,
+            status_code=HTTPStatus.OK,
+            dependencies=[Depends(current_user)],
+            tags=["ИПР"])
 async def get_my_iprs(
     user: User = Depends(current_user),
     session: AsyncSession = Depends(get_async_session),
 ):
     iprs = await ipr_crud.get_users_ipr(user, session)
+    return iprs
+
+
+@router.get("/{employee_id}/list-iprs",
+            response_model=list[IprListSupervisorOut],
+            response_model_exclude_none=True,
+            status_code=HTTPStatus.OK,
+            dependencies=[Depends(current_user)])
+async def get_users_iprs(employee_id: int,
+                         user: User = Depends(current_user),
+                         session: AsyncSession = Depends(get_async_session)):
+    employee = await check_user_exists(employee_id, session)
+    await check_current_user_is_employees_supervisor(employee_id, user, session)
+    iprs = await ipr_crud.get_users_ipr_by_supervisor(employee, session)
     return iprs
 
 
@@ -110,7 +122,8 @@ async def save_draft(ipr_id: int,
     return ipr
 
 
-@router.get("/test-list-iprs", response_model=list[IprDraftDB])
+@router.get("/test-list-iprs",
+            response_model=list[IprDraftDB])
 async def get_all_iprs(session: AsyncSession = Depends(get_async_session)):
     """Отладочный эндпоинт"""
     iprs = await ipr_crud.get_multi(session)
