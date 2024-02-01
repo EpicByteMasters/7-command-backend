@@ -40,7 +40,7 @@ def check_user_is_supervisor_in_ipr(ipr: Ipr,
 
 
 def check_ipr_is_in_progress(ipr) -> None:
-    if ipr.ipr_status_id == 'IN_PROGRESS':
+    if ipr.ipr_status_id != 'IN_PROGRESS':
         raise HTTPException(
             HTTPStatus.FORBIDDEN,
             detail="Данный ИПР нельзя отменить",
