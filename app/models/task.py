@@ -42,7 +42,7 @@ class EducationTask(Base):
 
 class Task(BaseWithName):
     close_date = Column(Date(), nullable=True)
-    description = Column(Text(), nullable=False)
+    description = Column(Text(), nullable=True)
     comment = Column(Text(length=96), nullable=True)
     supervisor_comment = Column(Text(length=96), nullable=True)
     task_status_id = Column(String,

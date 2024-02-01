@@ -1,7 +1,6 @@
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, Response
-from fastapi.encoders import jsonable_encoder
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends
 
@@ -67,14 +66,12 @@ async def create_new_ipr(draft_ipr: IPRDraftCreate,
     return ipr_draft
 
 
-@router.get(
-    "/employees/my_iprs",
-    response_model=list[IprListOut],
-    response_model_exclude_none=True,
-    status_code=HTTPStatus.OK,
-    dependencies=[Depends(current_user)],
-    tags=["ИПР"],
-)
+@router.get("/employees/my_iprs",
+            response_model=list[IprListOut],
+            response_model_exclude_none=True,
+            status_code=HTTPStatus.OK,
+            dependencies=[Depends(current_user)],
+            tags=["ИПР"])
 async def get_my_iprs(
     user: User = Depends(current_user),
     session: AsyncSession = Depends(get_async_session),
@@ -107,7 +104,8 @@ async def save_draft(ipr_id: int,
     return ipr
 
 
-@router.get("/test-list-iprs", response_model=list[IprDraftDB])
+@router.get("/test-list-iprs",
+            response_model=list[IprDraftDB])
 async def get_all_iprs(session: AsyncSession = Depends(get_async_session)):
     """Отладочный эндпоинт"""
     iprs = await ipr_crud.get_multi(session)
@@ -123,7 +121,7 @@ async def get_ipr_by_supervisor(ipr_id: int,
                                 user: User = Depends(current_user),
                                 session: AsyncSession = Depends(get_async_session)):
     ipr = await ipr_crud.check_ipr_exists(ipr_id, session)
-    check_user_is_ipr_supervisor(ipr, user)
+    # check_user_is_ipr_supervisor(ipr, user)
     return ipr
 
 

@@ -88,15 +88,22 @@ class IPRDraftTaskOut(BaseOut):
     description: str
     supervisor_comment: Optional[str]
     close_date: date
-    file: Optional[list[TaskFileOut]]
     education: Optional[list[EduTaskOut]]
+
+
+class UserMentorOut(BaseOut):
+    id: int
+    first_name: str
+    surname: str
+    patronymic: str
+    image_url: str
 
 
 class IPRDraftOut(BaseOut):
     id: int
     employee_id: int
     supervisor_id: int
-    mentor_id: Optional[int]
+    mentor: Optional[UserMentorOut]
     status: IPRStatusOut
     goal: Optional[IPRGoalOut]
     specialty: Optional[IPRSpecialtyOut]
@@ -106,7 +113,7 @@ class IPRDraftOut(BaseOut):
     task: Optional[list[IPRDraftTaskOut]]
 
 
-class TaskBase(BaseModel):
+class TaskBase(Base):
     name: Optional[str]
     description: Optional[str] = Field(None, min_length=1, max_length=96)
     close_date: Optional[date]
@@ -141,7 +148,7 @@ class IPREmployeeOut(BaseOut):
     id: int
     employee_id: int
     supervisor_id: int
-    mentor_id: Optional[int]
+    mentor: Optional[UserMentorOut]
     status: IPRStatusOut
     goal: IPRGoalOut
     specialty: IPRSpecialtyOut
@@ -155,7 +162,7 @@ class IPRSupervisorOut(BaseOut):
     id: int
     employee_id: int
     supervisor_id: int
-    mentor_id: Optional[int]
+    mentor: Optional[UserMentorOut]
     status: IPRStatusOut
     goal: IPRGoalOut
     specialty: IPRSpecialtyOut
