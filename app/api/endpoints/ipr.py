@@ -10,6 +10,7 @@ from app.api.validators import (
     check_user_is_supervisor,
     check_current_user_is_employees_supervisor,
     check_user_is_ipr_mentor_or_supervisor,
+    check_ipr_is_in_progress,
 )
 from app.api.utils import add_competencies, update_tasks
 from app.core.db import get_async_session
@@ -160,6 +161,7 @@ async def cancel_ipr(ipr_id=int,
                      session: AsyncSession = Depends(get_async_session)):
     ipr = await ipr_crud.get_ipr_by_id(ipr_id, session)
     check_user_is_ipr_mentor_or_supervisor(ipr, user)
+    check_ipr_is_in_progress(ipr)
     await ipr_crud.to_cancel(ipr, session)
     return HTTPStatus.OK
 
