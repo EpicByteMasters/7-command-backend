@@ -1,4 +1,5 @@
 from datetime import date
+from typing import Optional
 
 from fastapi_users import schemas
 from pydantic import BaseModel
@@ -77,10 +78,15 @@ class UserCreate(schemas.BaseUserCreate):
 
 
 class UserUpdate(schemas.BaseUserUpdate):
-    first_name: str
-    surname: str
-    patronymic: str
-    image_url: str
+    first_name: Optional[str]
+    surname: Optional[str]
+    patronymic: Optional[str]
+    image_url: Optional[str]
+    supervisor_id: Optional[int]
+    position_id: Optional[str]
+    specialty_id: Optional[str]
+    is_mentor: Optional[bool]
+    is_supervisor: Optional[bool]
 
 
 class UserMentorIpr(BaseModel):
