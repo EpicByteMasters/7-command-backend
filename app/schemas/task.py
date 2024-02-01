@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Extra, Field
 
 from .utils import to_camel
 
@@ -43,7 +43,8 @@ class EduTaskDB(BaseModel):
 
 class FileCreate(BaseModel):
     name: str
-    url: str
+    url_link: str
+    ipr_id: int
 
 
 class FileDB(FileCreate):
@@ -51,62 +52,53 @@ class FileDB(FileCreate):
 
     class Config:
         orm_mode = True
+        alias_generator = to_camel
+        allow_population_by_field_name = True
 
 
 class TaskBase(BaseModel):
-    name: str
-    description: str = Field(..., min_length=1, max_length=96)
+    name: Optional[str]
+    description: Optional[str] = Field(None, min_length=1, max_length=96)
     close_date: Optional[date]
 
-    # @validator("description")
-    # def text_does_not_have_incorrect_symbols(cls, value):
-    #     pattern = re.compile(r'^[а-яА-ЯёЁa-zA-Z0-9?.,!:-_*()%"]+$')
-    #     if not pattern.match(value):
-    #         raise ValueError("Использованы некорректные символы")
-    #     return value
 
-    # @validator("close_date")
-    # def close_date_bigger_than_now(cls, value):
-    #     time_now = date.today()
-    #     if value <= time_now:
-    #         raise ValueError(
-    #             "Дата окончания ИПР не должна быть меньше или равна текущей дате"
-    #         )
-    #     return value
+class TaskCreate(TaskBase):
+    supervisor_comment: Optional[str] = Field(None, max_length=96)
+    education: Optional[list[int]]
+    ipr_id: Optional[int]
+    comment: Optional[str]
+    task_status_id: Optional[str]
+
+
+class TaskStatusDB(BaseModel):
+    id: str
+    name: str
+
+    class Config:
+        orm_mode = True
 
 
 class TaskDB(TaskBase):
     id: int
     supervisor_comment: Optional[str] = Field(None, max_length=96)
     comment: Optional[str] = Field(None, max_length=96)
-    status: Optional[str]
+    task_status: Optional[TaskStatusDB]
     file: Optional[list[FileDB]]
     education: Optional[list[EduTaskDB]]
 
     class Config:
+        orm_mode = True
         alias_generator = to_camel
         allow_population_by_field_name = True
-        orm_mode = True
 
 
 class TaskCreateInput(TaskBase):
-    educations: Optional[list[int]]
+    id: Optional[int] = None
+    education: Optional[list[int]]
     supervisor_comment: Optional[str] = Field(None, max_length=96)
-    status: Optional[str] = "IN_PROGRESS"
+    task_status_id: Optional[str]
 
     class Config:
         alias_generator = to_camel
         allow_population_by_field_name = True
-
-    # @validator("supervisor_comment")
-    # def text_does_not_have_incorrect_symbols(cls, value):
-    #     pattern = re.compile(r'^[a-zA-Zа-яА-ЯёЁ0-9]+$')
-    #     if not pattern.match(value):
-    #         return value
-    #         # raise ValueError("Использованы некорректные символы")
-    #     return value
-
-
-class TaskCreate(TaskBase):
-    supervisor_comment: Optional[str] = Field(None, max_length=96)
-    ipr_id: int
+        extra = Extra.allow

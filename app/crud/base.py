@@ -18,14 +18,14 @@ class CRUDBase:
 
     async def get_multi(self, session: AsyncSession):
         all_objects = await session.execute(select(self.model))
-        return all_objects.scalars().all()
+        return all_objects.unique().scalars().all()
 
     async def create(
         self,
         obj_in,
         session: AsyncSession,
     ):
-        obj_in_data = obj_in.dict()
+        obj_in_data = obj_in.dict(exclude_none=True)
         db_obj = self.model(**obj_in_data)
         session.add(db_obj)
         await session.commit()
@@ -34,7 +34,7 @@ class CRUDBase:
 
     async def update(self, obj_in, db_obj, session: AsyncSession):
         obj_data = jsonable_encoder(db_obj)
-        update_data = obj_in.dict(exclude_unset=True)
+        update_data = obj_in.dict(exclude_none=True)
 
         for field in obj_data:
             if field in update_data:
