@@ -166,6 +166,7 @@ class IPRCrud(CRUDBase):
             session.add(task)
         session.add(ipr)
         await session.commit()
+        await session.refresh()
 
 
 class CompetencyIprCrud(CRUDBase):

@@ -10,7 +10,8 @@ from app.api.validators import (
     check_user_is_supervisor,
     check_current_user_is_employees_supervisor,
     check_user_is_ipr_employee_or_supervisor,
-    check_user_is_ipr_mentor_or_supervisor
+    check_user_is_ipr_mentor_or_supervisor,
+    check_ipr_is_in_progress
 )
 from app.api.utils import (add_competencies, update_tasks)
 from app.core.db import get_async_session
@@ -174,5 +175,6 @@ async def ipr_complete(ipr_id: int,
                        session: AsyncSession = Depends(get_async_session)):
     ipr = ipr_crud.get_ipr_by_id(ipr_id, session)
     check_user_is_ipr_mentor_or_supervisor(ipr, user)
-    ipr_crud.to_complete(ipr_patch, ipr_id, session)
+    check_ipr_is_in_progress(ipr)
+    await ipr_crud.to_complete(ipr_patch, ipr_id, session)
     return HTTPStatus.OK
