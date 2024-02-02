@@ -32,8 +32,8 @@ class UserRead(schemas.BaseUser[int]):
     surname: str
     patronymic: str
     image_url: str
-    position: PositionDB
-    specialty: SpecialtyDB
+    position: Optional[PositionDB]
+    specialty: Optional[SpecialtyDB]
     supervisor_id: int
     is_supervisor: bool
     is_mentor: bool
