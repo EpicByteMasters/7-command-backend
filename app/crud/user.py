@@ -27,9 +27,7 @@ class CRUDUser(CRUDBase):
         return user
 
     async def get_users_by_boss(self, user: User, session: AsyncSession):
-        query = select(self.model).where(
-            self.model.supervisor_id == user.id, self.model.is_supervisor == True
-        )
+        query = select(self.model).where(self.model.supervisor_id == user.id)
         all_objects = await session.execute(query)
         return all_objects.scalars().all()
 

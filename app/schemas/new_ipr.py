@@ -1,22 +1,9 @@
 from datetime import date
 from typing import Optional
 
-from pydantic import BaseModel, Extra, Field
+from pydantic import Extra, Field
 
-from .utils import to_camel
-
-
-class Base(BaseModel):
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-
-
-class BaseOut(Base):
-
-    class Config:
-        orm_mode = True
+from .base import AllOptional, Base, BaseOut
 
 
 class IPRStatusOut(BaseOut):
@@ -61,6 +48,18 @@ class IprListOut(BaseOut):
     status: IPRStatusOut
     create_date: date
     close_date: date
+    task_count: int
+    task_completed: int
+
+
+class IprListSupervisorOut(BaseOut):
+    id: int
+    goal: Optional[IPRGoalOut]
+    status: IPRStatusOut
+    create_date: Optional[date]
+    close_date: Optional[date]
+    task_count: int
+    task_completed: int
 
 
 class TaskFileOut(BaseOut):
@@ -88,15 +87,22 @@ class IPRDraftTaskOut(BaseOut):
     description: str
     supervisor_comment: Optional[str]
     close_date: date
-    file: Optional[list[TaskFileOut]]
     education: Optional[list[EduTaskOut]]
+
+
+class UserMentorOut(BaseOut):
+    id: int
+    first_name: str
+    surname: str
+    patronymic: str
+    image_url: str
 
 
 class IPRDraftOut(BaseOut):
     id: int
     employee_id: int
     supervisor_id: int
-    mentor_id: Optional[int]
+    mentor: Optional[UserMentorOut]
     status: IPRStatusOut
     goal: Optional[IPRGoalOut]
     specialty: Optional[IPRSpecialtyOut]
@@ -106,7 +112,7 @@ class IPRDraftOut(BaseOut):
     task: Optional[list[IPRDraftTaskOut]]
 
 
-class TaskBase(BaseModel):
+class TaskBase(Base):
     name: Optional[str]
     description: Optional[str] = Field(None, min_length=1, max_length=96)
     close_date: Optional[date]
@@ -118,8 +124,6 @@ class TaskCreateInput(TaskBase):
     supervisor_comment: Optional[str] = Field(None, max_length=96)
 
     class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
         extra = Extra.allow
 
 
@@ -141,7 +145,9 @@ class IPREmployeeOut(BaseOut):
     id: int
     employee_id: int
     supervisor_id: int
-    mentor_id: Optional[int]
+    mentor: Optional[UserMentorOut]
+    create_date: date
+    close_date: date
     status: IPRStatusOut
     goal: IPRGoalOut
     specialty: IPRSpecialtyOut
@@ -149,18 +155,20 @@ class IPREmployeeOut(BaseOut):
     description: Optional[str]
     task: list[IPRTaskOut]
     comment: Optional[str]
+    ipr_grade: Optional[int]
 
 
-class IPRSupervisorOut(BaseOut):
+class IPRSupervisorOut(BaseOut, metaclass=AllOptional):
     id: int
     employee_id: int
     supervisor_id: int
-    mentor_id: Optional[int]
+    mentor: UserMentorOut
     status: IPRStatusOut
     goal: IPRGoalOut
     specialty: IPRSpecialtyOut
     competency: list[IPRCompetencyOut]
-    description: Optional[str]
-    supervisor_comment: Optional[str]
+    description: str
+    supervisor_comment: str
     task: list[IPRTaskOut]
-    comment: Optional[str]
+    comment: str
+    ipr_grade: int
