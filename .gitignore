@@ -153,3 +153,6 @@ pip/
 .project
 
 /alembic
+
+# Data Base
+*.db
