@@ -27,7 +27,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .  # путь к проекту FastAPI
-          file: ./Dockerfile-main  # путь к вашему Dockerfile
+          file: ./Dockerfile  # путь к вашему Dockerfile
           push: true
           tags: nrudakov/a110:latest  # имя образа
           build-args: |
