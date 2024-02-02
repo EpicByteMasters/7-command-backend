@@ -50,7 +50,6 @@ async def get_iprs(
                 task_count += 1
                 if r_task.task_status_id == "COMPLETED":
                     task_completed += 1
-            progress = str(task_completed) + "/" + str(task_count)
             if ipr.close_date:
                 r_date = ipr.close_date.strftime("%d-%m-%Y")
             else:
@@ -67,15 +66,13 @@ async def get_iprs(
                             "firstName": usr.first_name,
                             "lastName": usr.surname,
                             "middleName": usr.patronymic,
-                            "position_id": usr.position_id,
-                            "specialty_id": usr.specialty_id,
+                            "positionId": usr.position_id,
                             "imageUrl": usr.image_url,
-                            "goal": ipr.goal_id,
-                            "date_of_end": r_date,
-                            "progress": progress,
-                            "task_completed": task_completed,
-                            "task_count": task_count,
-                            "status": ipr.ipr_status_id,
+                            "goalId": ipr.goal_id,
+                            "dateOfEnd": r_date,
+                            "taskCompleted": task_completed,
+                            "taskCount": task_count,
+                            "statusIid": ipr.ipr_status_id,
                         }
                     )
 
@@ -92,7 +89,6 @@ async def get_iprs(
                             "lastName": usr.surname,
                             "middleName": usr.patronymic,
                             "position_id": usr.position_id,
-                            "specialty_id": usr.specialty_id,
                             "imageUrl": usr.image_url,
                             "status": "NO_IPR",
                         }
@@ -102,7 +98,7 @@ async def get_iprs(
         status_code=200,
         content={
             "employees": resalt,
-            "total_count_employee": total_count_employee,
-            "total_count_ipsr": total_count_iprs,
+            "totalСountIpsr": total_count_iprs,
+            "totalCountEmployee": total_count_employee,
         },
     )
