@@ -48,8 +48,8 @@ jobs:
           # sudo docker login -u ppen76 -p ${{ secrets.DOCKER_PASSWORD }} Открыл репозитарий
           sudo docker pull nrudakov/a110
           #остановка контейнерa
-          sudo docker stop develop_c951
-          sudo docker run --rm --name develop_c951 -d -p 81:8080 nrudakov/a110
+          sudo docker stop main_c951
+          sudo docker run --rm --name main_c951 -d -p 8000:8000 nrudakov/a110
   send_message:
     runs-on: ubuntu-latest
     needs: deploy
