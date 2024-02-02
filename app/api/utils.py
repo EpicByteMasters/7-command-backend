@@ -30,6 +30,10 @@ async def add_competencies(
     return new_draft_dict
 
 
+async def update_tasks():
+    pass
+
+
 async def create_tasks(new_draft_dict: dict, ipr_id, session) -> dict:
     """
     Вспомогательная функци создания заданий для ИПР и связи их с соответсвующим

@@ -12,9 +12,7 @@ app = FastAPI(
 
 app.include_router(main_router)
 
-origins = [
-    "http://localhost:3000",
-]
+origins = ['*']
 
 app.add_middleware(
     CORSMiddleware,

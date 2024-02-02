@@ -53,19 +53,17 @@ async def get_iprs(
                 "firstName": r_user.first_name,
                 "lastName": r_user.surname,
                 "middleName": r_user.patronymic,
-                "position_id": r_user.position_id,
-                "specialty_id": r_user.specialty_id,
+                "positionId": r_user.position_id,
                 "imageUrl": r_user.image_url,
-                "goal": ipr.goal_id,
-                "date_of_end": r_date,
-                "progress": progress,
-                "task_completed": task_completed,
-                "task_count": task_count,
-                "status": ipr.ipr_status_id,
+                "goalId": ipr.goal_id,
+                "dateOfEnd": r_date,
+                "taskCompleted": task_completed,
+                "taskCount": task_count,
+                "statusId": ipr.ipr_status_id,
             }
         )
         total_count += 1
 
     return JSONResponse(
-        status_code=200, content={"employees": resalt, "total_count": total_count}
+        status_code=200, content={"employees": resalt, "totalCount": total_count}
     )

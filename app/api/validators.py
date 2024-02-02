@@ -23,11 +23,27 @@ def check_user_is_ipr_mentor_or_supervisor(ipr: Ipr, user: User) -> None:
         )
 
 
+def check_ipr_is_in_progress(ipr) -> None:
+    if ipr.ipr_status_id != 'IN_PROGRESS':
+        raise HTTPException(
+            HTTPStatus.FORBIDDEN,
+            detail="Данный ИПР нельзя отменить",
+        )
+
+
 def check_user_is_ipr_supervisor(ipr: Ipr, user: User) -> None:
     if ipr.supervisor_id != user.id:
         raise HTTPException(
             HTTPStatus.FORBIDDEN,
             detail="У вас нет прав модифицировать/удалять данный черновик ИПР",
+        )
+
+
+def check_ipr_is_in_progress(ipr) -> None:
+    if ipr.ipr_status_id != 'IN_PROGRESS':
+        raise HTTPException(
+            HTTPStatus.FORBIDDEN,
+            detail="Данный ИПР нельзя отменить",
         )
 
 
