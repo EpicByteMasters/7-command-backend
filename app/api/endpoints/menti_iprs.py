@@ -41,7 +41,6 @@ async def get_iprs(
             task_count += 1
             if r_task.task_status_id == "COMPLETED":
                 task_completed += 1
-        progress = str(task_completed) + "/" + str(task_count)
         r_user = await user_crud.get(ipr.employee_id, session)
         if ipr.close_date:
             r_date = ipr.close_date.strftime("%d-%m-%Y")
@@ -55,6 +54,7 @@ async def get_iprs(
                 "middleName": r_user.patronymic,
                 "positionId": r_user.position_id,
                 "imageUrl": r_user.image_url,
+                "iprId": ipr.id,
                 "goalId": ipr.goal_id,
                 "dateOfEnd": r_date,
                 "taskCompleted": task_completed,

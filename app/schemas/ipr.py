@@ -219,7 +219,7 @@ class IprsOut(BaseModel):
     middle_name: Optional[str]
     position_id: Optional[str]
 
-
+    ipr_id: Optional[int]
     goal_id: Optional[str]
     date_of_end: Optional[str]
     task_completed: Optional[int]
