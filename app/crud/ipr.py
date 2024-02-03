@@ -201,7 +201,8 @@ class IPRCrud(CRUDBase):
             session.add(task)
         session.add(ipr)
         await session.commit()
-        await session.refresh()
+        await session.refresh(ipr)
+        return ipr
 
     async def to_cancel(self, ipr: Ipr, session: AsyncSession):
         ipr.ipr_status_id = "CANCELED"

@@ -86,7 +86,7 @@ class IPRDraftTaskOut(BaseOut, metaclass=AllOptional):
     description: str
     supervisor_comment: Optional[str]
     close_date: date
-    education: Optional[list[EduTaskOut]]
+    education: list[EduTaskOut]
 
 
 class UserMentorOut(BaseOut):
@@ -126,19 +126,23 @@ class TaskCreateInput(TaskBase):
         extra = Extra.allow
 
 
-class IPRDraftIn(Base, metaclass=AllOptional):
+class IPRDraftUpdate(Base, metaclass=AllOptional):
     goal_id: str
     specialty_id: str
-    competency: list[str]
     mentor_id: int
     description: str
     supervisor_comment: str
+    ipr_status_id: str
+
+
+class IPRDraftIn(IPRDraftUpdate):
+    competency: list[str]
     tasks: list[TaskCreateInput]
 
 
 class IPRTaskOut(IPRDraftTaskOut):
-    comment: Optional[str]
-    file: Optional[list[TaskFileOut]]
+    comment: str
+    file: list[TaskFileOut]
 
 
 class IPREmployeeOut(BaseOut):
@@ -200,3 +204,9 @@ class TaskUpdateEmployeeIn(Base):
 
 class IprUpdateEmployeeIn(Base):
     tasks: Optional[list[TaskUpdateEmployeeIn]]
+
+
+class IprComplete(Base):
+    ipr_status: str
+    ipr_grade: int
+    supervisor_comment: str
