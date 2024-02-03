@@ -1,131 +1,11 @@
 from datetime import date
 from typing import Optional
 
-from pydantic import BaseModel, Extra
+from pydantic import BaseModel, Extra, Field
 
-from .utils import to_camel
-from app.schemas.task import TaskCreateInput, TaskDB
-from app.schemas.user import SpecialtyDB
+from app.schemas.task import IPRDraftTaskOut, IPRTaskOut
 
-
-class StatusDB(BaseModel):
-    id: str
-    name: str
-
-    class Config:
-        orm_mode = True
-
-
-class GoalDB(StatusDB):
-    pass
-
-
-class CompetencyRel(StatusDB):
-    pass
-
-
-class CompetencyDB(BaseModel):
-    competency_rel: CompetencyRel
-
-    class Config:
-        orm_mode = True
-
-
-class IprDraftDB(BaseModel):
-    id: int
-    status: StatusDB
-    employee_id: int
-    mentor_id: Optional[int]
-    competency: list[CompetencyDB]
-    supervisor_id: Optional[int]
-    goal: Optional[GoalDB]
-    specialty: Optional[SpecialtyDB]
-    create_date: Optional[date]
-    close_date: Optional[date]
-    description: Optional[str]
-    supervisor_comment: Optional[str]
-    comment: Optional[str]
-    task: Optional[list[TaskDB]]
-
-    class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-
-
-class IprWorkerGet(BaseModel):
-    goal: str
-    specialty: str
-    create_date: Optional[date]
-    close_date: Optional[date]
-    mentor_id: Optional[int]
-    description: Optional[str]
-    comment: Optional[str]
-    tasks: Optional[list[TaskDB]]
-    ipr_status: str
-
-
-class IprListRead(BaseModel):
-    id: int
-    goal: str
-    ipr_status: str
-    create_date: date
-    close_date: date
-
-    class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-
-
-class IprDraftCreate(BaseModel):
-    employee_id: int
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-
-
-class IprListRead(BaseModel):
-    id: int
-    goal: Optional[GoalDB]
-    status: StatusDB
-    create_date: Optional[date]
-    close_date: Optional[date]
-
-    class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-
-
-class IprDraftUpdateInput(BaseModel):
-    goal_id: Optional[str]
-    specialty_id: Optional[str]
-    competency: Optional[list[str]]
-    mentor_id: Optional[int]
-    description: Optional[str]
-    supervisor_comment: Optional[str]
-    tasks: Optional[list[TaskCreateInput]]
-
-    class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-
-
-class IprDraftUpdate(BaseModel):
-    goal_id: Optional[str]
-    specialty_id: Optional[str]
-    mentor_id: Optional[int]
-    description: Optional[str]
-    supervisor_comment: Optional[str]
-    ipr_status_id: Optional[str]
-
-
-class TaskIprCreate(BaseModel):
-    ipr_id: int
-    task_id: int
+from .base import AllOptional, Base, BaseOut
 
 
 class CompetencyIprCreate(BaseModel):
@@ -133,40 +13,174 @@ class CompetencyIprCreate(BaseModel):
     ipr_id: int
 
 
-class IprUpdate(BaseModel):
-    # ipr_status_id: Optional[str]
-    goal_id: Optional[str]
-    competency: Optional[list[str]]
-    specialty_id: Optional[str]
-    mentor_id: Optional[int]
+class IPRStatusOut(BaseOut):
+    id: str
+    name: str
+
+
+class IPRGoalOut(IPRStatusOut):
+    pass
+
+
+class IPRSpecialtyOut(IPRStatusOut):
+    pass
+
+
+class CompetencyRel(IPRStatusOut):
+    pass
+
+
+class IPRCompetencyOut(BaseOut):
+    competency_rel: CompetencyRel
+
+
+class IPRDraftCreate(Base):
+    employee_id: int
+
+
+class IPRDraftCreateOut(BaseOut):
+    id: int
+    employee_id: int
+    supervisor_id: int
+    status: IPRStatusOut
+
+
+class IprListOut(BaseOut):
+    id: int
+    goal: IPRGoalOut
+    status: IPRStatusOut
+    create_date: date
+    close_date: date
+    task_count: int
+    task_completed: int
+
+
+class IprListSupervisorOut(BaseOut):
+    id: int
+    goal: Optional[IPRGoalOut]
+    status: IPRStatusOut
+    create_date: Optional[date]
+    close_date: Optional[date]
+    task_count: int
+    task_completed: int
+
+
+class UserMentorOut(BaseOut):
+    id: int
+    first_name: str
+    surname: str
+    patronymic: str
+    image_url: str
+
+
+class IPRDraftOut(BaseOut):
+    id: int
+    employee_id: int
+    supervisor_id: int
+    mentor: Optional[UserMentorOut]
+    status: IPRStatusOut
+    goal: Optional[IPRGoalOut]
+    specialty: Optional[IPRSpecialtyOut]
+    competency: Optional[list[IPRCompetencyOut]]
     description: Optional[str]
-    # supervisor_comment: Optional[str]
-    tasks: Optional[list[TaskCreateInput]]
     supervisor_comment: Optional[str]
+    task: Optional[list[IPRDraftTaskOut]]
+
+
+class TaskBase(Base, metaclass=AllOptional):  #
+    name: str
+    description: str = Field(None, min_length=1, max_length=96)
+    close_date: date
+
+
+class TaskCreateInput(TaskBase):  #
+    id: int = None
+    education: list[int]
+    supervisor_comment: str = Field(None, max_length=96)
 
     class Config:
-        alias_generator = to_camel
-        allow_population_by_field = True
+        extra = Extra.allow
 
 
-class FileCreateEmployee(BaseModel):
+class IPRDraftUpdate(Base, metaclass=AllOptional):
+    goal_id: str
+    specialty_id: str
+    mentor_id: int
+    description: str
+    supervisor_comment: str
+    ipr_status_id: str
+
+
+class IPRDraftIn(IPRDraftUpdate):
+    competency: list[str]
+    tasks: list[TaskCreateInput]
+
+
+class IPREmployeeOut(BaseOut):
+    id: int
+    employee_id: int
+    supervisor_id: int
+    mentor: Optional[UserMentorOut]
+    create_date: date
+    close_date: date
+    status: IPRStatusOut
+    goal: IPRGoalOut
+    specialty: IPRSpecialtyOut
+    competency: list[IPRCompetencyOut]
+    description: Optional[str]
+    task: list[IPRTaskOut]
+    comment: Optional[str]
+    ipr_grade: Optional[int]
+
+
+class IPRSupervisorOut(BaseOut, metaclass=AllOptional):
+    id: int
+    employee_id: int
+    supervisor_id: int
+    mentor: UserMentorOut
+    status: IPRStatusOut
+    goal: IPRGoalOut
+    specialty: IPRSpecialtyOut
+    competency: list[IPRCompetencyOut]
+    description: str
+    supervisor_comment: str
+    task: list[IPRTaskOut]
+    comment: str
+    ipr_grade: int
+
+
+class IprUpdateSupervisorIn(Base, metaclass=AllOptional):
+    goal_id: str
+    competency: list[str]
+    specialty_id: str
+    mentor_id: int
+    description: str
+    tasks: list[TaskCreateInput]
+    supervisor_comment: str
+
+
+class FileCreateEmployeeIn(Base):
     name: str
     url_link: str
 
     class Config:
         extra = Extra.allow
-        alias_generator = to_camel
-        allow_population_by_field = True
 
 
-class TaskUpdateEmployee(BaseModel):
+class TaskUpdateEmployeeIn(Base):
     id: int
     comment: Optional[str]
-    file: Optional[list[FileCreateEmployee]]
+    file: Optional[list[FileCreateEmployeeIn]]
 
 
-class IprUpdateEmployee(BaseModel):
-    tasks: Optional[list[TaskUpdateEmployee]]
+class IprUpdateEmployeeIn(Base):
+    tasks: Optional[list[TaskUpdateEmployeeIn]]
+
+
+class IprComplete(Base):
+    ipr_status: str
+    ipr_grade: int
+    supervisor_comment: str
 
 
 class IprsOut(BaseModel):
@@ -176,7 +190,7 @@ class IprsOut(BaseModel):
     middle_name: Optional[str]
     position_id: Optional[str]
 
-
+    ipr_id: Optional[int]
     goal_id: Optional[str]
     date_of_end: Optional[str]
     task_completed: Optional[int]
@@ -184,18 +198,3 @@ class IprsOut(BaseModel):
     status_id: Optional[str]
     total_count_iprs: Optional[int]
     total_count_employees: Optional[int]
-
-
-class IprStatusPatch(BaseModel):
-    ipr_status_id: Optional[str]
-
-    class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-
-
-class IprComplete(BaseModel):
-    ipr_status: str
-    ipr_grade: int
-    supervisor_comment: str

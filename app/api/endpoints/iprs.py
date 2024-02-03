@@ -68,11 +68,12 @@ async def get_iprs(
                             "middleName": usr.patronymic,
                             "positionId": usr.position_id,
                             "imageUrl": usr.image_url,
+                            "iprId": ipr.id,
                             "goalId": ipr.goal_id,
                             "dateOfEnd": r_date,
                             "taskCompleted": task_completed,
                             "taskCount": task_count,
-                            "statusIid": ipr.ipr_status_id,
+                            "statusId": ipr.ipr_status_id,
                         }
                     )
 

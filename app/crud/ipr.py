@@ -201,7 +201,8 @@ class IPRCrud(CRUDBase):
             session.add(task)
         session.add(ipr)
         await session.commit()
-        await session.refresh()
+        await session.refresh(ipr)
+        return ipr
 
     async def to_cancel(self, ipr: Ipr, session: AsyncSession):
         ipr.ipr_status_id = "CANCELED"
@@ -247,12 +248,13 @@ class CompetencyIprCrud(CRUDBase):
             .where(CompetencyIpr.ipr_id == ipr_id)
         )
         result_out = await session.execute(query_out)
-        result_out = result_out.scalars().all()
         result_in = await session.execute(query_in)
+        result_out = result_out.scalars().all()
         result_in = result_in.scalars().all()
 
+        to_delete = []
         for obj in result_out:
-            await session.delete(obj)
+            to_delete.append(obj)
 
         for competency in data_in:
             if competency not in result_in:
@@ -262,6 +264,9 @@ class CompetencyIprCrud(CRUDBase):
                 }
                 data_in = CompetencyIprCreate.parse_obj(create_dict)
                 await competency_ipr_crud.create(data_in, session)
+
+        for obj in to_delete:
+            await session.delete(obj)
 
 
 status_crud = IPRCrud(Status)
