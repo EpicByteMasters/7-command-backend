@@ -1,5 +1,6 @@
 from http import HTTPStatus
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.db import get_async_session
@@ -12,7 +13,6 @@ router = APIRouter()
 
 @router.patch(
     "/{id}/complete",
-    response_model_exclude_none=True,
     dependencies=[Depends(current_user)],
 )
 async def patch_task_complete(
@@ -22,17 +22,18 @@ async def patch_task_complete(
 ):
     """Поменять статус задачи IN_PROGRESS -> AWAITING_REVIEW"""
     task = await task_crud.get(id, session)
-    if task.task_status != "IN_PROGRESS":
+    if task.task_status_id != "IN_PROGRESS":
         exeption_delail = (
-            "Сотрудник не может выполнить задачи со статусом " + task.task_status
+            "Задача уже находится на проверке или завершена"
         )
         raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail=exeption_delail)
-    return await task_crud.patch_task_awaiting_review(id, session)
+    await task_crud.patch_task_awaiting_review(id, session)
+    return JSONResponse(status_code=HTTPStatus.OK,
+                        content={"message": "Задача удалена"})
 
 
 @router.get(
-    "/{id}",
-    response_model_exclude_none=True,
+    "/{id}"
 )
 async def get_task(id: int, session: AsyncSession = Depends(get_async_session)):
     """Получить задачу по id"""
