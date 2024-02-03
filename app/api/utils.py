@@ -14,7 +14,7 @@ from app.crud import (
     user_crud,
 )
 from app.models import Ipr
-from app.schemas.task import FileCreate, TaskCreate, EduTaskCreate
+from app.schemas.task import FileCreate, TaskCreate, EduTaskCreate, TaskUpdate
 
 
 async def add_competencies(
@@ -51,7 +51,7 @@ async def update_tasks(draft_dict: dict, ipr_id, session) -> dict:
             task = await task_crud.create(new_task, session)
         else:
             old_task = await task_crud.get(task_id, session)
-            updated_data = TaskCreate.parse_obj(task_in)
+            updated_data = TaskUpdate.parse_obj(task_in)
             task = await task_crud.update(updated_data, old_task, session)
 
         if educations is None:

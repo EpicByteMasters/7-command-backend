@@ -1,9 +1,14 @@
 from datetime import date
 from typing import Optional
 
-from pydantic import BaseModel, Extra, Field
+from pydantic import BaseModel, Extra
 
-from app.schemas.task import IPRDraftTaskOut, IPRTaskOut
+from app.schemas.task import (
+    IPRDraftTaskOut,
+    IPRTaskOut,
+    TaskCreate,
+    TaskUpdateSupervisorIn
+)
 
 from .base import AllOptional, Base, BaseOut
 
@@ -87,21 +92,6 @@ class IPRDraftOut(BaseOut):
     task: Optional[list[IPRDraftTaskOut]]
 
 
-class TaskBase(Base, metaclass=AllOptional):  #
-    name: str
-    description: str = Field(None, min_length=1, max_length=96)
-    close_date: date
-
-
-class TaskCreateInput(TaskBase):  #
-    id: int = None
-    education: list[int]
-    supervisor_comment: str = Field(None, max_length=96)
-
-    class Config:
-        extra = Extra.allow
-
-
 class IPRDraftUpdate(Base, metaclass=AllOptional):
     goal_id: str
     specialty_id: str
@@ -113,7 +103,7 @@ class IPRDraftUpdate(Base, metaclass=AllOptional):
 
 class IPRDraftIn(IPRDraftUpdate):
     competency: list[str]
-    tasks: list[TaskCreateInput]
+    tasks: list[TaskCreate]
 
 
 class IPREmployeeOut(BaseOut):
@@ -155,7 +145,7 @@ class IprUpdateSupervisorIn(Base, metaclass=AllOptional):
     specialty_id: str
     mentor_id: int
     description: str
-    tasks: list[TaskCreateInput]
+    tasks: list[TaskUpdateSupervisorIn]
     supervisor_comment: str
 
 

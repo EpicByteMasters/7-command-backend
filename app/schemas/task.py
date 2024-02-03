@@ -39,18 +39,25 @@ class FileCreate(BaseModel):
     ipr_id: int
 
 
-class TaskBase(BaseModel):
-    name: Optional[str]
-    description: Optional[str] = Field(None, min_length=1, max_length=96)
-    close_date: Optional[date]
+class TaskBase(Base, metaclass=AllOptional):
+    name: str
+    description: str = Field(None, min_length=1, max_length=96)
+    close_date: date
 
 
 class TaskCreate(TaskBase):
-    supervisor_comment: Optional[str] = Field(None, max_length=96)
-    education: Optional[list[int]]
-    ipr_id: Optional[int]
-    comment: Optional[str]
-    task_status_id: Optional[str]
+    supervisor_comment: str = Field(None, max_length=96)
+    education: list[int]
+    ipr_id: int
+    comment: str
+
+
+class TaskUpdate(TaskCreate):
+    task_status_id: str
+
+
+class TaskUpdateSupervisorIn(TaskUpdate):
+    id: int
 
 
 class TaskBase(Base, metaclass=AllOptional):
