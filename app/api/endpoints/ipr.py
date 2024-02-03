@@ -133,7 +133,7 @@ async def get_ipr_by_supervisor(ipr_id: int,
                                 user: User = Depends(current_user),
                                 session: AsyncSession = Depends(get_async_session)):
     ipr = await ipr_crud.check_ipr_exists(ipr_id, session)
-    check_user_is_ipr_supervisor(ipr, user)
+    check_user_is_ipr_mentor_or_supervisor(ipr, user)
     return ipr
 
 
@@ -161,7 +161,7 @@ async def edit_ipr_by_supervisor(ipr_id: int,
                                  user: User = Depends(current_user),
                                  session: AsyncSession = Depends(get_async_session)):
     ipr = await ipr_crud.check_ipr_exists(ipr_id, session)
-    check_user_is_ipr_supervisor(ipr, user)
+    check_user_is_ipr_mentor_or_supervisor(ipr, user)
 
     update_data_in = update_data_in.dict()
     new_mentor_id = update_data_in.get("mentor_id", None)

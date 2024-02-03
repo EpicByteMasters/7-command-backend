@@ -40,7 +40,7 @@ class TaskCrud(CRUDBase):
         session: AsyncSession,
     ) -> Optional[Task]:
         task = await task_crud.get(task_id, session=session)
-        task.task_status = "AWAITING_REVIEW"
+        task.task_status_id = "AWAITING_REVIEW"
         session.add(task)
         await session.commit()
         await session.refresh(task)
