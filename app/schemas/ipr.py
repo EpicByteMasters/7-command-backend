@@ -3,7 +3,14 @@ from typing import Optional
 
 from pydantic import BaseModel, Extra, Field
 
+from app.schemas.task import IPRDraftTaskOut, IPRTaskOut
+
 from .base import AllOptional, Base, BaseOut
+
+
+class CompetencyIprCreate(BaseModel):
+    competency: str
+    ipr_id: int
 
 
 class IPRStatusOut(BaseOut):
@@ -20,10 +27,6 @@ class IPRSpecialtyOut(IPRStatusOut):
 
 
 class CompetencyRel(IPRStatusOut):
-    pass
-
-
-class TaskStatusOut(IPRStatusOut):
     pass
 
 
@@ -62,33 +65,6 @@ class IprListSupervisorOut(BaseOut):
     task_completed: int
 
 
-class TaskFileOut(BaseOut):
-    id: int
-    name: str
-    url_link: str
-
-
-class EducationOut(BaseOut):
-    id: int
-    name: str
-    url_link: str
-
-
-class EduTaskOut(BaseOut):
-    status: bool
-    education: EducationOut
-
-
-class IPRDraftTaskOut(BaseOut, metaclass=AllOptional):
-    id: int
-    name: str
-    task_status: TaskStatusOut
-    description: str
-    supervisor_comment: Optional[str]
-    close_date: date
-    education: list[EduTaskOut]
-
-
 class UserMentorOut(BaseOut):
     id: int
     first_name: str
@@ -111,13 +87,13 @@ class IPRDraftOut(BaseOut):
     task: Optional[list[IPRDraftTaskOut]]
 
 
-class TaskBase(Base, metaclass=AllOptional):
+class TaskBase(Base, metaclass=AllOptional):  #
     name: str
     description: str = Field(None, min_length=1, max_length=96)
     close_date: date
 
 
-class TaskCreateInput(TaskBase):
+class TaskCreateInput(TaskBase):  #
     id: int = None
     education: list[int]
     supervisor_comment: str = Field(None, max_length=96)
@@ -138,11 +114,6 @@ class IPRDraftUpdate(Base, metaclass=AllOptional):
 class IPRDraftIn(IPRDraftUpdate):
     competency: list[str]
     tasks: list[TaskCreateInput]
-
-
-class IPRTaskOut(IPRDraftTaskOut):
-    comment: str
-    file: list[TaskFileOut]
 
 
 class IPREmployeeOut(BaseOut):

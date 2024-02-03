@@ -73,7 +73,7 @@ async def get_iprs(
                             "dateOfEnd": r_date,
                             "taskCompleted": task_completed,
                             "taskCount": task_count,
-                            "statusIid": ipr.ipr_status_id,
+                            "statusId": ipr.ipr_status_id,
                         }
                     )
 
