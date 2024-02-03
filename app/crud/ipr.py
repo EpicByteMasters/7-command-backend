@@ -191,7 +191,7 @@ class IPRCrud(CRUDBase):
                           session: AsyncSession):
         ipr.ipr_status_id = ipr_data.ipr_status_id
         ipr.ipr_grade = ipr_data.ipr_grade
-        ipr.supervisor_comment = ipr_data.supervisor_comment
+        ipr.comment = ipr_data.comment
 
         for task in ipr.task:
             task.close_date = date.today()
