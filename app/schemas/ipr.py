@@ -178,7 +178,7 @@ class IprUpdateEmployeeIn(Base):
 
 
 class IprComplete(Base):
-    ipr_status: str
+    ipr_status_id: str
     ipr_grade: int
     supervisor_comment: str
 

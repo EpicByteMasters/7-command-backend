@@ -259,6 +259,7 @@ async def cancel_ipr(ipr_id=int,
     check_user_is_ipr_mentor_or_supervisor(ipr, user)
     check_ipr_is_in_progress(ipr)
     ipr = await ipr_crud.to_cancel(ipr, session)
+    await demote_user_as_mentor(ipr_id, ipr.mentor_id, session)
     return ipr
 
 
@@ -273,6 +274,7 @@ async def remove_ipr(
     ipr = await ipr_crud.check_ipr_exists(ipr_id, session)
     check_user_is_ipr_supervisor(ipr, user)
     await ipr_crud.remove_ipr(ipr_id, session)
+    await demote_user_as_mentor(ipr_id, ipr.mentor_id, session)
     return Response(status_code=HTTPStatus.NO_CONTENT)
 
 
@@ -285,8 +287,9 @@ async def ipr_complete(ipr_id: int,
                        ipr_patch: IprComplete,
                        user: User = Depends(current_user),
                        session: AsyncSession = Depends(get_async_session)):
-    ipr = ipr_crud.get_ipr_by_id(ipr_id, session)
+    ipr = await ipr_crud.get_ipr_by_id(ipr_id, session)
     check_user_is_ipr_mentor_or_supervisor(ipr, user)
     check_ipr_is_in_progress(ipr)
-    ipr = await ipr_crud.to_complete(ipr_patch, ipr_id, session)
+    ipr = await ipr_crud.to_complete(ipr, ipr_patch, session)
+    await demote_user_as_mentor(ipr_id, ipr.mentor_id, session)
     return ipr
