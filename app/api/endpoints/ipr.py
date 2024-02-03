@@ -25,7 +25,7 @@ from app.core.db import get_async_session
 from app.core.user import current_user
 from app.crud import ipr_crud
 from app.models import User
-from app.schemas.new_ipr import (
+from app.schemas.ipr import (
     IprComplete,
     IPRDraftCreate,
     IPRDraftCreateOut,
