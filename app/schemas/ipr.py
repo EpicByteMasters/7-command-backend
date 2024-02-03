@@ -134,13 +134,11 @@ class CompetencyIprCreate(BaseModel):
 
 
 class IprUpdate(BaseModel):
-    # ipr_status_id: Optional[str]
     goal_id: Optional[str]
     competency: Optional[list[str]]
     specialty_id: Optional[str]
     mentor_id: Optional[int]
     description: Optional[str]
-    # supervisor_comment: Optional[str]
     tasks: Optional[list[TaskCreateInput]]
     supervisor_comment: Optional[str]
 

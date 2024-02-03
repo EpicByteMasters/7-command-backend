@@ -66,7 +66,6 @@ class TaskFileOut(BaseOut):
     id: int
     name: str
     url_link: str
-    # ipr_id: str
 
 
 class EducationOut(BaseOut):
@@ -80,7 +79,7 @@ class EduTaskOut(BaseOut):
     education: EducationOut
 
 
-class IPRDraftTaskOut(BaseOut):
+class IPRDraftTaskOut(BaseOut, metaclass=AllOptional):
     id: int
     name: str
     task_status: TaskStatusOut
@@ -112,33 +111,34 @@ class IPRDraftOut(BaseOut):
     task: Optional[list[IPRDraftTaskOut]]
 
 
-class TaskBase(Base):
-    name: Optional[str]
-    description: Optional[str] = Field(None, min_length=1, max_length=96)
-    close_date: Optional[date]
+class TaskBase(Base, metaclass=AllOptional):
+    name: str
+    description: str = Field(None, min_length=1, max_length=96)
+    close_date: date
 
 
 class TaskCreateInput(TaskBase):
-    id: Optional[int] = None
-    education: Optional[list[int]]
-    supervisor_comment: Optional[str] = Field(None, max_length=96)
+    id: int = None
+    education: list[int]
+    supervisor_comment: str = Field(None, max_length=96)
 
     class Config:
         extra = Extra.allow
 
 
-class IPRDraftIn(Base):
-    goal_id: Optional[str]
-    specialty_id: Optional[str]
-    competency: Optional[list[str]]
-    mentor_id: Optional[int]
-    description: Optional[str]
-    supervisor_comment: Optional[str]
-    tasks: Optional[list[TaskCreateInput]]
+class IPRDraftIn(Base, metaclass=AllOptional):
+    goal_id: str
+    specialty_id: str
+    competency: list[str]
+    mentor_id: int
+    description: str
+    supervisor_comment: str
+    tasks: list[TaskCreateInput]
 
 
 class IPRTaskOut(IPRDraftTaskOut):
     comment: Optional[str]
+    file: Optional[list[TaskFileOut]]
 
 
 class IPREmployeeOut(BaseOut):
@@ -172,3 +172,31 @@ class IPRSupervisorOut(BaseOut, metaclass=AllOptional):
     task: list[IPRTaskOut]
     comment: str
     ipr_grade: int
+
+
+class IprUpdateSupervisorIn(Base, metaclass=AllOptional):
+    goal_id: str
+    competency: list[str]
+    specialty_id: str
+    mentor_id: int
+    description: str
+    tasks: list[TaskCreateInput]
+    supervisor_comment: str
+
+
+class FileCreateEmployeeIn(Base):
+    name: str
+    url_link: str
+
+    class Config:
+        extra = Extra.allow
+
+
+class TaskUpdateEmployeeIn(Base):
+    id: int
+    comment: Optional[str]
+    file: Optional[list[FileCreateEmployeeIn]]
+
+
+class IprUpdateEmployeeIn(Base):
+    tasks: Optional[list[TaskUpdateEmployeeIn]]

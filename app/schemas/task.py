@@ -93,10 +93,9 @@ class TaskDB(TaskBase):
 
 
 class TaskCreateInput(TaskBase):
-    id: Optional[int] = None
-    education: Optional[list[int]]
-    supervisor_comment: Optional[str] = Field(None, max_length=96)
-    task_status_id: Optional[str]
+    id: int = None
+    education: list[int]
+    supervisor_comment: str = Field(None, max_length=96)
 
     class Config:
         alias_generator = to_camel

@@ -27,23 +27,26 @@ from app.crud import ipr_crud
 from app.models import User
 from app.schemas.ipr import (
     # IprListRead,
-    IprDraftDB,
+    # IprDraftDB,
     # IprDraftCreate,
     IprDraftUpdate,
-    IprDraftUpdateInput,
-    IprUpdate,
+    # IprDraftUpdateInput,
+    # IprUpdate,
     IprComplete,
-    IprUpdateEmployee,
+    # IprUpdateEmployee,
     # IprStatusPatch
 )
 from app.schemas.new_ipr import (
     IPRDraftCreate,
     IPRDraftCreateOut,
+    IPRDraftIn,
     IPRDraftOut,
     IPREmployeeOut,
     IPRSupervisorOut,
     IprListOut,
-    IprListSupervisorOut
+    IprListSupervisorOut,
+    IprUpdateEmployeeIn,
+    IprUpdateSupervisorIn
 )
 
 
@@ -104,7 +107,7 @@ async def get_users_iprs(employee_id: int,
               summary='Сохранить черновик',
               tags=['ИПР'])
 async def save_draft(ipr_id: int,
-                     draft_data_in: IprDraftUpdateInput,
+                     draft_data_in: IPRDraftIn,
                      user: User = Depends(current_user),
                      session: AsyncSession = Depends(get_async_session)):
     ipr = await ipr_crud.check_ipr_exists(ipr_id, session)
@@ -123,7 +126,7 @@ async def save_draft(ipr_id: int,
 
 
 @router.get("/test-list-iprs",
-            response_model=list[IprDraftDB])
+            response_model=list[IPRSupervisorOut])
 async def get_all_iprs(session: AsyncSession = Depends(get_async_session)):
     """Отладочный эндпоинт"""
     iprs = await ipr_crud.get_multi(session)
@@ -163,7 +166,7 @@ async def get_ipr_employee(ipr_id: int,
               summary="Редактировать ИПР руководителем",
               tags=['ИПР'])
 async def edit_ipr_by_supervisor(ipr_id: int,
-                                 update_data_in: IprUpdate,
+                                 update_data_in: IprUpdateSupervisorIn,
                                  user: User = Depends(current_user),
                                  session: AsyncSession = Depends(get_async_session)):
     ipr = await ipr_crud.check_ipr_exists(ipr_id, session)
@@ -198,7 +201,7 @@ async def edit_ipr_by_supervisor(ipr_id: int,
               summary="Редактировать ИПР сотрудником",
               tags=['ИПР'])
 async def edit_ipr_by_employee(ipr_id: int,
-                               update_data_in: IprUpdateEmployee,
+                               update_data_in: IprUpdateEmployeeIn,
                                user: User = Depends(current_user),
                                session: AsyncSession = Depends(get_async_session)):
     ipr = await ipr_crud.check_ipr_exists(ipr_id, session)
@@ -216,7 +219,7 @@ async def edit_ipr_by_employee(ipr_id: int,
               status_code=HTTPStatus.CREATED,
               tags=['ИПР'])
 async def start_ipr(ipr_id: int,
-                    update_data_in: IprUpdate,
+                    update_data_in: IprUpdateSupervisorIn,
                     user: User = Depends(current_user),
                     session: AsyncSession = Depends(get_async_session)):
     ipr = await ipr_crud.check_ipr_exists(ipr_id, session)
