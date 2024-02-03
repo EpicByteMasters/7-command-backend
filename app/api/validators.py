@@ -43,7 +43,7 @@ def check_ipr_is_in_progress(ipr) -> None:
     if ipr.ipr_status_id != 'IN_PROGRESS':
         raise HTTPException(
             HTTPStatus.FORBIDDEN,
-            detail="Данный ИПР нельзя отменить",
+            detail="Данный ИПР нельзя завершить или отменить",
         )
 
 

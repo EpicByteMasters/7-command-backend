@@ -155,4 +155,4 @@ pip/
 /alembic
 
 # Data Base
-*.db
+# *.db

@@ -3,27 +3,18 @@ from typing import Optional
 
 from pydantic import BaseModel, Extra, Field
 
-from .utils import to_camel
+from app.schemas.base import AllOptional, Base, BaseOut
 
 
-class Educations(BaseModel):
+class TaskStatusOut(BaseOut):
+    id: str
     name: str
-    url: Optional[str]
 
 
-class EduTask(BaseModel):
-    status: bool
-
-
-class EducationsDB(BaseModel):
+class TaskFileOut(BaseOut):
     id: int
     name: str
     url_link: str
-
-    class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
 
 
 class EduTaskCreate(BaseModel):
@@ -31,29 +22,21 @@ class EduTaskCreate(BaseModel):
     education_id: int
 
 
-class EduTaskDB(BaseModel):
-    status: bool
-    education: EducationsDB
+class EducationOut(BaseOut):
+    id: int
+    name: str
+    url_link: str
 
-    class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
+
+class EduTaskOut(BaseOut):
+    status: bool
+    education: EducationOut
 
 
 class FileCreate(BaseModel):
     name: str
     url_link: str
     ipr_id: int
-
-
-class FileDB(FileCreate):
-    id: int
-
-    class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
 
 
 class TaskBase(BaseModel):
@@ -70,35 +53,31 @@ class TaskCreate(TaskBase):
     task_status_id: Optional[str]
 
 
-class TaskStatusDB(BaseModel):
-    id: str
+class TaskBase(Base, metaclass=AllOptional):
     name: str
-
-    class Config:
-        orm_mode = True
-
-
-class TaskDB(TaskBase):
-    id: int
-    supervisor_comment: Optional[str] = Field(None, max_length=96)
-    comment: Optional[str] = Field(None, max_length=96)
-    task_status: Optional[TaskStatusDB]
-    file: Optional[list[FileDB]]
-    education: Optional[list[EduTaskDB]]
-
-    class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
+    description: str = Field(None, min_length=1, max_length=96)
+    close_date: date
 
 
 class TaskCreateInput(TaskBase):
-    id: Optional[int] = None
-    education: Optional[list[int]]
-    supervisor_comment: Optional[str] = Field(None, max_length=96)
-    task_status_id: Optional[str]
+    id: int = None
+    education: list[int]
+    supervisor_comment: str = Field(None, max_length=96)
 
     class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
         extra = Extra.allow
+
+
+class IPRDraftTaskOut(BaseOut, metaclass=AllOptional):
+    id: int
+    name: str
+    task_status: TaskStatusOut
+    description: str
+    supervisor_comment: Optional[str]
+    close_date: date
+    education: list[EduTaskOut]
+
+
+class IPRTaskOut(IPRDraftTaskOut):
+    comment: str
+    file: list[TaskFileOut]

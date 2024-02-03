@@ -61,7 +61,7 @@ async def list_task_statuses(session: AsyncSession = Depends(get_async_session))
 @router.get(
     "/specialty", response_model=list[SpecialtyDoc], response_model_exclude_none=True
 )
-async def list_task_statuses(session: AsyncSession = Depends(get_async_session)):
+async def list_specialties(session: AsyncSession = Depends(get_async_session)):
     specialties = await specialty_crud.get_multi(session)
     return specialties
 

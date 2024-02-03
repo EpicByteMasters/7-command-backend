@@ -1,9 +1,13 @@
+from http import HTTPStatus
+
+from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.validators import check_task_exists_in_ipr
 
 from app.crud import (
     competency_ipr_crud,
+    education_crud,
     education_task_crud,
     file_crud,
     task_crud,
@@ -30,35 +34,6 @@ async def add_competencies(
     return new_draft_dict
 
 
-async def update_tasks():
-    pass
-
-
-async def create_tasks(new_draft_dict: dict, ipr_id, session) -> dict:
-    """
-    Вспомогательная функци создания заданий для ИПР и связи их с соответсвующим
-    ИПР при сохранении черновика ИПР.
-    """
-    tasks = new_draft_dict.pop("tasks")
-    if tasks is None:
-        return new_draft_dict
-    for task in tasks:
-        educations = task.pop("education")
-        task["ipr_id"] = ipr_id
-        new_task = TaskCreate.parse_obj(task)
-        task = await task_crud.create(new_task, session)
-        task_id = task.id
-        if educations is not None:
-            for education_id in educations:
-                education_task = {"task_id": task_id, "education_id": education_id}
-                eduSchema = EduTaskCreate.parse_obj(education_task)
-                await education_task_crud.get_or_create(education_id,
-                                                        task_id,
-                                                        eduSchema,
-                                                        session)
-    return new_draft_dict
-
-
 async def update_tasks(draft_dict: dict, ipr_id, session) -> dict:
     """
     Вспомогательная функци создания заданий для ИПР и связи их с соответсвующим
@@ -82,6 +57,10 @@ async def update_tasks(draft_dict: dict, ipr_id, session) -> dict:
         if educations is None:
             continue
         for education_id in educations:
+            education = await education_crud.get(education_id, session)
+            if education is None:
+                raise HTTPException(status_code=HTTPStatus.BAD_REQUEST,
+                                    detail="Такой курс не найден")
             education_task = {
                 "task_id": task.id,
                 "education_id": education_id
