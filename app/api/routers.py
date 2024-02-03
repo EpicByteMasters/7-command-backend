@@ -19,7 +19,7 @@ main_router.include_router(iprs_router,
                            prefix="/mentor/iprs",
                            tags=["План развития сотрудников"])
 main_router.include_router(m_iprs_router,
-                           prefix="/mentι/iprs",
+                           prefix="/menti/iprs",
                            tags=["План развития для ментора"])
 main_router.include_router(notifications_router, tags=["Уведомления"])
 main_router.include_router(user_router, tags=["Пользователи"])
