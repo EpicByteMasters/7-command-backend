@@ -218,13 +218,12 @@ class IprsOut(BaseModel):
     last_name: Optional[str]
     middle_name: Optional[str]
     position_id: Optional[str]
-    specialty_id: Optional[str]
 
-    goal: Optional[str]
+
+    goal_id: Optional[str]
     date_of_end: Optional[str]
-    progress: Optional[str]
     task_completed: Optional[int]
     task_count: Optional[int]
-    status: Optional[str]
+    status_id: Optional[str]
     total_count_iprs: Optional[int]
     total_count_employees: Optional[int]
