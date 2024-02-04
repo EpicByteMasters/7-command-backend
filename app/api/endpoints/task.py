@@ -1,3 +1,4 @@
+from datetime import date
 from http import HTTPStatus
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
@@ -5,8 +6,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.db import get_async_session
 from app.core.user import current_user
+from app.models import Notification
 from app.models.user import User
-from app.crud import task_crud
+from app.crud import task_crud, ipr_crud, notification_crud
 
 router = APIRouter()
 
@@ -26,7 +28,35 @@ async def patch_task_complete(
         exeption_delail = (
             "Задача уже находится на проверке или завершена"
         )
-        raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail=exeption_delail)
+        raise HTTPException(status_code=HTTPStatus.FORBIDDEN,
+                            detail=exeption_delail)
+
+    ipr = await ipr_crud.get_ipr_by_id(task.ipr_id, session)
+    notification_supervisor = Notification(
+        title="Задача выполнена",
+        briefText="Сотрудник выполнил задачу. Пожалуйста, ознакомьтесь с результатом.",
+        date=date.today(),
+        ipr_id=ipr.id,
+        user_id=ipr.supervisor_id,
+        task_id=task.id,
+    )
+
+    await notification_crud.create_notification(notification_supervisor,
+                                                session)
+
+    if ipr.mentor_id:
+        notification_mentor = Notification(
+            title="Задача выполнена",
+            briefText="Сотрудник выполнил задачу. Пожалуйста, ознакомьтесь с результатом.",
+            date=date.today(),
+            ipr_id=ipr.id,
+            user_id=ipr.mentor_id,
+            task_id=task.id,
+        )
+
+        await notification_crud.create_notification(notification_mentor,
+                                                    session)
+
     await task_crud.patch_task_awaiting_review(id, session)
     return JSONResponse(status_code=HTTPStatus.OK,
                         content={"message": "Задача удалена"})

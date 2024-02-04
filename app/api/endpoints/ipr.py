@@ -1,3 +1,4 @@
+from datetime import date
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, Response
@@ -23,8 +24,8 @@ from app.api.utils import (
 )
 from app.core.db import get_async_session
 from app.core.user import current_user
-from app.crud import ipr_crud
-from app.models import User
+from app.crud import ipr_crud, notification_crud
+from app.models import User, Notification
 from app.schemas.ipr import (
     IprComplete,
     IPRDraftCreate,
@@ -174,15 +175,15 @@ async def edit_ipr_by_supervisor(ipr_id: int,
     update_data_in = await update_tasks(update_data_in, ipr_id, session)
     update_data_in = await add_competencies(update_data_in, ipr_id, session)
 
+    update_data_in = IPRDraftUpdate.parse_obj(update_data_in)
+    ipr = await ipr_crud.update_ipr(update_data_in, ipr, session)
+
     if new_mentor is not None:
         if not new_mentor.is_mentor:
             new_mentor.is_mentor = True
             session.add(user)
         if old_mentor_id is not None:
             await demote_user_as_mentor(ipr_id, old_mentor_id, session)
-
-    update_data_in = IPRDraftUpdate.parse_obj(update_data_in)
-    ipr = await ipr_crud.update_ipr(update_data_in, ipr, session)
     return ipr
 
 
@@ -275,6 +276,7 @@ async def remove_ipr(
     session: AsyncSession = Depends(get_async_session),
 ):
     ipr = await ipr_crud.check_ipr_exists(ipr_id, session)
+    check_ipr_is_draft(ipr)
     check_user_is_ipr_supervisor(ipr, user)
     await ipr_crud.remove_ipr(ipr_id, session)
     if ipr.mentor_id is not None:
@@ -291,10 +293,21 @@ async def ipr_complete(ipr_id: int,
                        ipr_patch: IprComplete,
                        user: User = Depends(current_user),
                        session: AsyncSession = Depends(get_async_session)):
+
     ipr = await ipr_crud.get_ipr_by_id(ipr_id, session)
     check_user_is_ipr_mentor_or_supervisor(ipr, user)
     check_ipr_is_in_progress(ipr)
     ipr = await ipr_crud.to_complete(ipr, ipr_patch, session)
+
+    notification = Notification(
+        title="План развития закрыт",
+        briefText="Руководитель подвёл итог вашему плану развития. Нажмите, чтобы посмотреть результат.",
+        date=date.today(),
+        ipr_id=ipr.id,
+        user_id=ipr.employee_id,
+    )
+    await notification_crud.create_notification(notification, session)
+
     if ipr.mentor_id is not None:
         await demote_user_as_mentor(ipr_id, ipr.mentor_id, session)
     return ipr

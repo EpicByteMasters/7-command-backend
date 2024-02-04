@@ -91,7 +91,7 @@ async def get_iprs(
                             "middleName": usr.patronymic,
                             "position_id": usr.position_id,
                             "imageUrl": usr.image_url,
-                            "status": "NO_IPR",
+                            "statusId": "NO_IPR",
                         }
                     )
 
