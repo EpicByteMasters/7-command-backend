@@ -16,13 +16,13 @@ from app.models.task import (
 class EducationTaskCRUD(CRUDBase):
 
     async def get_or_create(self,
-                            education_id,
+                            edu_id,
                             task_id,
                             schema,
                             session: AsyncSession):
         query = (
             select(EducationTask)
-            .where(EducationTask.education_id == education_id,
+            .where(EducationTask.education_id == edu_id,
                    EducationTask.task_id == task_id)
         )
         result = await session.execute(query)
@@ -31,6 +31,18 @@ class EducationTaskCRUD(CRUDBase):
             return
         obj = self.create(schema, session)
         return obj
+
+    async def get_object_by_task_and_edu_id(task_id,
+                                            edu_id,
+                                            session: AsyncSession):
+        query = (
+            select(EducationTask)
+            .where(EducationTask.education_id == edu_id,
+                   EducationTask.task_id == task_id)
+        )
+        result = await session.execute(query)
+        result = result.unique().scalar()
+        return result
 
 
 class TaskCrud(CRUDBase):
