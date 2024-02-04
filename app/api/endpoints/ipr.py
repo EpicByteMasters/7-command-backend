@@ -1,4 +1,3 @@
-from datetime import date
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, Response
@@ -179,7 +178,8 @@ async def edit_ipr_by_supervisor(ipr_id: int,
         if not new_mentor.is_mentor:
             new_mentor.is_mentor = True
             session.add(user)
-        await demote_user_as_mentor(ipr_id, old_mentor_id, session)
+        if old_mentor_id is not None:
+            await demote_user_as_mentor(ipr_id, old_mentor_id, session)
 
     update_data_in = IPRDraftUpdate.parse_obj(update_data_in)
     ipr = await ipr_crud.update_ipr(update_data_in, ipr, session)
@@ -233,10 +233,11 @@ async def start_ipr(ipr_id: int,
     if new_mentor is not None and not new_mentor.is_mentor:
         new_mentor.is_mentor = True
         session.add(new_mentor)
-        await demote_user_as_mentor(ipr_id, old_mentor_id, session)
+        if old_mentor_id is not None:
+            await demote_user_as_mentor(ipr_id, old_mentor_id, session)
     else:
         old_mentor = await session.get(User, old_mentor_id)
-        if not old_mentor.is_mentor:
+        if old_mentor and not old_mentor.is_mentor:
             old_mentor.is_mentor = True
             session.add(old_mentor)
 
@@ -260,7 +261,8 @@ async def cancel_ipr(ipr_id=int,
     check_user_is_ipr_mentor_or_supervisor(ipr, user)
     check_ipr_is_in_progress(ipr)
     ipr = await ipr_crud.to_cancel(ipr, session)
-    await demote_user_as_mentor(ipr_id, ipr.mentor_id, session)
+    if ipr.mentor_id is not None:
+        await demote_user_as_mentor(ipr_id, ipr.mentor_id, session)
     return ipr
 
 
@@ -275,7 +277,8 @@ async def remove_ipr(
     ipr = await ipr_crud.check_ipr_exists(ipr_id, session)
     check_user_is_ipr_supervisor(ipr, user)
     await ipr_crud.remove_ipr(ipr_id, session)
-    await demote_user_as_mentor(ipr_id, ipr.mentor_id, session)
+    if ipr.mentor_id is not None:
+        await demote_user_as_mentor(ipr_id, ipr.mentor_id, session)
     return Response(status_code=HTTPStatus.NO_CONTENT)
 
 
@@ -293,7 +296,6 @@ async def ipr_complete(ipr_id: int,
     check_user_is_ipr_mentor_or_supervisor(ipr, user)
     check_ipr_is_in_progress(ipr)
     ipr = await ipr_crud.to_complete(ipr, ipr_patch, session)
-    await demote_user_as_mentor(ipr_id, ipr.mentor_id, session)
 
     # Создаем уведомление сотруднику
     notification = Notification(
@@ -306,4 +308,6 @@ async def ipr_complete(ipr_id: int,
     await notification_crud.create_notification(notification, session)
 
 
+    if ipr.mentor_id is not None:
+        await demote_user_as_mentor(ipr_id, ipr.mentor_id, session)
     return ipr

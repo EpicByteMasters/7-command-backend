@@ -1,6 +1,5 @@
 import datetime
 
-from .base import CRUDBase
 from sqlalchemy import select, and_, not_
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import User, Notification, Ipr, Task
@@ -20,7 +19,9 @@ class NotificationCRUD(CRUDBase):
             )
         )
 
-        ipr_closed_objs = (await session.execute(query_ipr)).scalars().all()
+        ipr_closed_objs = (
+            await session.execute(query_ipr)
+        ).unique().scalars().all()
         for ipr_closed_obj in ipr_closed_objs:
             msg = NotificationGet(
                 title="Истек срок плана развития",
@@ -51,13 +52,15 @@ class NotificationCRUD(CRUDBase):
                 ),
             )
         )
-        task_closed_objs = (await session.execute(query_task)).scalars().all()
+        task_closed_objs = (
+            await session.execute(query_task)
+        ).unique().scalars().all()
         for task_closed_obj in task_closed_objs:
             msg = NotificationGet(
                 title="Истек срок задачи",
                 briefText="Истек срок задачи.",
                 date=task_closed_obj.close_date,
-                url=f"http://link/{task_closed_obj.id}",
+            url=f"http://link/{task_closed_obj.id}",
             ).dict()
 
             msg.pop("url")
@@ -69,13 +72,16 @@ class NotificationCRUD(CRUDBase):
             await session.refresh(obj)
 
 
-    async def get_user_notifications(self, user: User, session: AsyncSession):
-        await check_ipr_closed(user, session)
-        await check_task_closed(user, session)
+    async def get_user_notifications(self,user: User, session: AsyncSession):
+        await self.check_ipr_closed(user, session)
+        await self.check_task_closed(user, session)
         query = select(Notification).where(Notification.user_id == user.id)
-        result = (await session.execute(query)).scalars().all()
+        result = (await session.execute(query)).unique().scalars().all()
         link_id = (
-            (await session.execute(select(Ipr.id).where(Ipr.employee_id == user.id)))
+            (await session.execute(
+                select(Ipr.id).where(Ipr.employee_id == user.id)
+            ))
+            .unique()
             .scalars()
             .first()
         )
