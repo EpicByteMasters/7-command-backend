@@ -174,15 +174,15 @@ async def edit_ipr_by_supervisor(ipr_id: int,
     update_data_in = await update_tasks(update_data_in, ipr_id, session)
     update_data_in = await add_competencies(update_data_in, ipr_id, session)
 
+    update_data_in = IPRDraftUpdate.parse_obj(update_data_in)
+    ipr = await ipr_crud.update_ipr(update_data_in, ipr, session)
+
     if new_mentor is not None:
         if not new_mentor.is_mentor:
             new_mentor.is_mentor = True
             session.add(user)
         if old_mentor_id is not None:
             await demote_user_as_mentor(ipr_id, old_mentor_id, session)
-
-    update_data_in = IPRDraftUpdate.parse_obj(update_data_in)
-    ipr = await ipr_crud.update_ipr(update_data_in, ipr, session)
     return ipr
 
 

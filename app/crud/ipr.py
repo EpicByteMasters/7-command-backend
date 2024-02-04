@@ -252,10 +252,14 @@ class CompetencyIprCrud(CRUDBase):
         for obj in result_out:
             to_delete.append(obj)
 
-        for competency in data_in:
-            if competency not in result_in:
+        for competency_id in data_in:
+            if competency_id not in result_in:
+                competency = await competency_crud.get(competency_id, session)
+                if competency is None:
+                    raise HTTPException(status_code=HTTPStatus.BAD_REQUEST,
+                                        detail="Такой курс не найден")
                 create_dict = {
-                    "competency": competency,
+                    "competency": competency_id,
                     "ipr_id": ipr_id
                 }
                 data_in = CompetencyIprCreate.parse_obj(create_dict)
