@@ -65,7 +65,8 @@ async def update_tasks(draft_dict: dict, ipr_id, session) -> dict:
                 education_id, task_id
             )
             if edu_task:
-                continue
+                raise HTTPException(status_code=HTTPStatus.BAD_REQUEST,
+                                    detail="Этот курс уже прикреплен к задаче")
             education_task = {
                 "task_id": task.id,
                 "education_id": education_id
