@@ -21,6 +21,7 @@ from app.schemas.ipr import CompetencyIprCreate
 
 
 class IPRCrud(CRUDBase):
+
     async def create_ipr_draft(self, obj_in, user_id: int, session: AsyncSession):
         obj_in_data = obj_in.dict()
         obj_in_data["ipr_status_id"] = "DRAFT"
@@ -51,20 +52,31 @@ class IPRCrud(CRUDBase):
         return all_objects.unique().scalars().all()
 
     async def get_last_users_ipr(self, user: User, session: AsyncSession):
-        query = (
+        query_draft = (
+            select(Ipr).where(
+                Ipr.is_deleted == False,  # noqa
+                Ipr.employee_id == user.id,
+                Ipr.ipr_status_id == "DRAFT"
+            )
+        )
+        query_if_no_draft = (
             select(Ipr)
             .where(
                 Ipr.is_deleted == False,  # noqa
-                Ipr.employee_id == user.id,
+                Ipr.employee_id == user.id
             )
             .order_by(desc(Ipr.create_date))
             .limit(1)
         )
-        # Плохо: Ipr.create_date нет у черновика. Но на 1 сотрудника только 1 черновик
-        all_objects = await session.execute(query)
+
+        draft = await session.execute(query_draft)
+        draft = draft.scalar()
+        if draft:
+            return draft
+        all_objects = await session.execute(query_if_no_draft)
         if not all_objects:
             return None
-        return all_objects.scalars().first()
+        return all_objects.scalar()
 
     async def check_ipr_exists(self, ipr_id: int, session: AsyncSession) -> Ipr:
         ipr = await self.get_ipr_by_id(ipr_id, session)
@@ -161,7 +173,7 @@ class IPRCrud(CRUDBase):
                                                   session: AsyncSession):
         query = select(Ipr).where(
             and_(Ipr.ipr_status_id == "DRAFT",
-                 Ipr.is_deleted == False,
+                 Ipr.is_deleted == False,  # noqa
                  Ipr.employee_id == user_id))
         result = await session.execute(query)
         result = result.scalar()
