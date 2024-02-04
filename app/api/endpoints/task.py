@@ -28,22 +28,21 @@ async def patch_task_complete(
         exeption_delail = (
             "Задача уже находится на проверке или завершена"
         )
-        raise HTTPException(status_code=HTTPStatus.FORBIDDEN, detail=exeption_delail)
+        raise HTTPException(status_code=HTTPStatus.FORBIDDEN,
+                            detail=exeption_delail)
 
-    # Создаем уведомления руководителю и ментору
     ipr = await ipr_crud.get_ipr_by_id(task.ipr_id, session)
-    print(ipr.supervisor_id)
     notification_supervisor = Notification(
-        title=  "Задача выполнена",
-        briefText= "Сотрудник выполнил задачу. Пожалуйста, ознакомьтесь с результатом.",
-        date= date.today(),
-        ipr_id= ipr.id,
-        user_id= ipr.supervisor_id,
-        task_id= task.id,
-        )
+        title="Задача выполнена",
+        briefText="Сотрудник выполнил задачу. Пожалуйста, ознакомьтесь с результатом.",
+        date=date.today(),
+        ipr_id=ipr.id,
+        user_id=ipr.supervisor_id,
+        task_id=task.id,
+    )
 
-    await notification_crud.create_notification(notification_supervisor, session)
-
+    await notification_crud.create_notification(notification_supervisor,
+                                                session)
 
     if ipr.mentor_id:
         notification_mentor = Notification(
@@ -55,8 +54,8 @@ async def patch_task_complete(
             task_id=task.id,
         )
 
-        await notification_crud.create_notification(notification_mentor, session)
-
+        await notification_crud.create_notification(notification_mentor,
+                                                    session)
 
     await task_crud.patch_task_awaiting_review(id, session)
     return JSONResponse(status_code=HTTPStatus.OK,

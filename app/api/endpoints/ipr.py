@@ -1,3 +1,4 @@
+from datetime import date
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, Response
@@ -275,6 +276,7 @@ async def remove_ipr(
     session: AsyncSession = Depends(get_async_session),
 ):
     ipr = await ipr_crud.check_ipr_exists(ipr_id, session)
+    check_ipr_is_draft(ipr)
     check_user_is_ipr_supervisor(ipr, user)
     await ipr_crud.remove_ipr(ipr_id, session)
     if ipr.mentor_id is not None:
@@ -297,16 +299,14 @@ async def ipr_complete(ipr_id: int,
     check_ipr_is_in_progress(ipr)
     ipr = await ipr_crud.to_complete(ipr, ipr_patch, session)
 
-    # Создаем уведомление сотруднику
     notification = Notification(
-        title=  "План развития закрыт",
-        briefText= "Руководитель подвёл итог вашему плану развития. Нажмите, чтобы посмотреть результат.",
-        date= date.today(),
-        ipr_id= ipr.id,
-        user_id= ipr.employee_id,
-        )
+        title="План развития закрыт",
+        briefText="Руководитель подвёл итог вашему плану развития. Нажмите, чтобы посмотреть результат.",
+        date=date.today(),
+        ipr_id=ipr.id,
+        user_id=ipr.employee_id,
+    )
     await notification_crud.create_notification(notification, session)
-
 
     if ipr.mentor_id is not None:
         await demote_user_as_mentor(ipr_id, ipr.mentor_id, session)
