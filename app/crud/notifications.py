@@ -2,6 +2,7 @@ import datetime
 
 from sqlalchemy import select, and_, not_
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.crud.base import CRUDBase
 from app.models import User, Notification, Ipr, Task
 from app.schemas.notifications import NotificationGet
 
@@ -38,7 +39,6 @@ class NotificationCRUD(CRUDBase):
             await session.commit()
             await session.refresh(obj)
 
-
     async def check_task_closed(self, user: User, session: AsyncSession):
         query_task = select(Task).where(
             and_(
@@ -60,7 +60,7 @@ class NotificationCRUD(CRUDBase):
                 title="Истек срок задачи",
                 briefText="Истек срок задачи.",
                 date=task_closed_obj.close_date,
-            url=f"http://link/{task_closed_obj.id}",
+                url=f"http://link/{task_closed_obj.id}",
             ).dict()
 
             msg.pop("url")
@@ -71,8 +71,7 @@ class NotificationCRUD(CRUDBase):
             await session.commit()
             await session.refresh(obj)
 
-
-    async def get_user_notifications(self,user: User, session: AsyncSession):
+    async def get_user_notifications(self, user: User, session: AsyncSession):
         await self.check_ipr_closed(user, session)
         await self.check_task_closed(user, session)
         query = select(Notification).where(Notification.user_id == user.id)
@@ -103,7 +102,6 @@ class NotificationCRUD(CRUDBase):
         except Exception as e:
             session.rollback()
             raise e
-        print(notification.user_id)
         return notification
 
 
