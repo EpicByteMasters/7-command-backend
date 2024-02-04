@@ -68,7 +68,7 @@ class IPRCrud(CRUDBase):
 
     async def check_ipr_exists(self, ipr_id: int, session: AsyncSession) -> Ipr:
         ipr = await self.get_ipr_by_id(ipr_id, session)
-        if ipr is None:
+        if ipr is None or ipr.is_deleted is True:
             raise HTTPException(
                 status_code=HTTPStatus.NOT_FOUND, detail="ИПР не найден."
             )
@@ -161,6 +161,7 @@ class IPRCrud(CRUDBase):
                                                   session: AsyncSession):
         query = select(Ipr).where(
             and_(Ipr.ipr_status_id == "DRAFT",
+                 Ipr.is_deleted == False,
                  Ipr.employee_id == user_id))
         result = await session.execute(query)
         result = result.scalar()
