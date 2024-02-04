@@ -12,6 +12,7 @@ class NotificationCRUD(CRUDBase):
         query_ipr = select(Ipr).where(
             and_(
                 Ipr.close_date <= datetime.date.today(),
+                Ipr.ipr_status_id == "IN_PROGRESS",
                 not_(
                     Ipr.id.in_(
                         select(Notification.ipr_id).where(Notification.user_id == user.id)

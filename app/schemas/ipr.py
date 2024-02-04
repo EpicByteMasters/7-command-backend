@@ -128,6 +128,8 @@ class IPRSupervisorOut(BaseOut, metaclass=AllOptional):
     employee_id: int
     supervisor_id: int
     mentor: UserMentorOut
+    create_date: date
+    close_date: date
     status: IPRStatusOut
     goal: IPRGoalOut
     specialty: IPRSpecialtyOut
