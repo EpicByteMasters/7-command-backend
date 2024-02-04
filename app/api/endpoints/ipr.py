@@ -1,3 +1,4 @@
+from datetime import date
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, Response
@@ -23,8 +24,8 @@ from app.api.utils import (
 )
 from app.core.db import get_async_session
 from app.core.user import current_user
-from app.crud import ipr_crud
-from app.models import User
+from app.crud import ipr_crud, notification_crud
+from app.models import User, Notification
 from app.schemas.ipr import (
     IprComplete,
     IPRDraftCreate,
@@ -287,9 +288,22 @@ async def ipr_complete(ipr_id: int,
                        ipr_patch: IprComplete,
                        user: User = Depends(current_user),
                        session: AsyncSession = Depends(get_async_session)):
+
     ipr = await ipr_crud.get_ipr_by_id(ipr_id, session)
     check_user_is_ipr_mentor_or_supervisor(ipr, user)
     check_ipr_is_in_progress(ipr)
     ipr = await ipr_crud.to_complete(ipr, ipr_patch, session)
     await demote_user_as_mentor(ipr_id, ipr.mentor_id, session)
+
+    # Создаем уведомление сотруднику
+    notification = Notification(
+        title=  "План развития закрыт",
+        briefText= "Руководитель подвёл итог вашему плану развития. Нажмите, чтобы посмотреть результат.",
+        date= date.today(),
+        ipr_id= ipr.id,
+        user_id= ipr.employee_id,
+        )
+    await notification_crud.create_notification(notification, session)
+
+
     return ipr

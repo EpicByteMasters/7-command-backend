@@ -13,3 +13,4 @@ from .task import (  # noqa
     task_status_crud,
 )
 from .user import position_crud, specialty_crud, user_crud  # noqa
+from .notifications import notification_crud # noqa
