@@ -18,7 +18,9 @@ async def check_ipr_closed(user: User, session: AsyncSession):
         )
     )
 
-    ipr_closed_objs = (await session.execute(query_ipr)).scalars().all()
+    ipr_closed_objs = (
+        await session.execute(query_ipr)
+    ).unique().scalars().all()
     for ipr_closed_obj in ipr_closed_objs:
         msg = NotificationGet(
             title="Истек срок плана развития",
@@ -49,7 +51,9 @@ async def check_task_closed(user: User, session: AsyncSession):
             ),
         )
     )
-    task_closed_objs = (await session.execute(query_task)).scalars().all()
+    task_closed_objs = (
+        await session.execute(query_task)
+    ).unique().scalars().all()
     for task_closed_obj in task_closed_objs:
         msg = NotificationGet(
             title="Истек срок задачи",
@@ -71,9 +75,12 @@ async def get_user_notifications(user: User, session: AsyncSession):
     await check_ipr_closed(user, session)
     await check_task_closed(user, session)
     query = select(Notification).where(Notification.user_id == user.id)
-    result = (await session.execute(query)).scalars().all()
+    result = (await session.execute(query)).unique().scalars().all()
     link_id = (
-        (await session.execute(select(Ipr.id).where(Ipr.employee_id == user.id)))
+        (await session.execute(
+            select(Ipr.id).where(Ipr.employee_id == user.id)
+        ))
+        .unique()
         .scalars()
         .first()
     )
