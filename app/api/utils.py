@@ -61,8 +61,8 @@ async def update_tasks(draft_dict: dict, ipr_id, session) -> dict:
             if education is None:
                 raise HTTPException(status_code=HTTPStatus.BAD_REQUEST,
                                     detail="Такой курс не найден")
-            edu_task = education_task_crud.get_object_by_task_and_edu_id(
-                education_id, task_id
+            edu_task = await education_task_crud.get_object_by_task_and_edu_id(
+                education_id, task_id, session
             )
             if edu_task:
                 raise HTTPException(status_code=HTTPStatus.BAD_REQUEST,

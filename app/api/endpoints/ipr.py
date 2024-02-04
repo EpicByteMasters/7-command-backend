@@ -71,10 +71,8 @@ async def create_new_ipr(draft_ipr: IPRDraftCreate,
             status_code=HTTPStatus.OK,
             dependencies=[Depends(current_user)],
             tags=["ИПР"])
-async def get_my_iprs(
-    user: User = Depends(current_user),
-    session: AsyncSession = Depends(get_async_session),
-):
+async def get_my_iprs(user: User = Depends(current_user),
+                      session: AsyncSession = Depends(get_async_session)):
     iprs = await ipr_crud.get_users_ipr(user, session)
     return iprs
 

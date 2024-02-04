@@ -37,7 +37,7 @@ class IPRCrud(CRUDBase):
             Ipr.is_deleted == False,  # noqa
             Ipr.employee_id == user.id,
             Ipr.ipr_status_id != "DRAFT",
-        )
+        ).order_by(desc(Ipr.create_date))
         all_objects = await session.execute(query)
         return all_objects.unique().scalars().all()
 
@@ -207,9 +207,10 @@ class IPRCrud(CRUDBase):
         ipr.comment = ipr_data.comment
 
         for task in ipr.task:
-            task.close_date = date.today()
-            task.task_status_id = ipr_data.ipr_status_id
-            session.add(task)
+            if task.task_status_id in ["IN_PROGRESS", "AWAITING_REVIEW"]:
+                task.close_date = date.today()
+                task.task_status_id = ipr_data.ipr_status_id
+                session.add(task)
         session.add(ipr)
         await session.commit()
         await session.refresh(ipr)
@@ -219,9 +220,10 @@ class IPRCrud(CRUDBase):
         ipr.ipr_status_id = "CANCELED"
 
         for task in ipr.task:
-            task.close_date = date.today()
-            task.task_status_id = "CANCELED"
-            session.add(task)
+            if task.task_status_id in ["IN_PROGRESS", "AWAITING_REVIEW"]:
+                task.close_date = date.today()
+                task.task_status_id = "CANCELED"
+                session.add(task)
         session.add(ipr)
         await session.commit()
         await session.refresh(ipr)
