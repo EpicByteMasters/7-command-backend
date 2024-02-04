@@ -32,7 +32,8 @@ class EducationTaskCRUD(CRUDBase):
         obj = self.create(schema, session)
         return obj
 
-    async def get_object_by_task_and_edu_id(task_id,
+    async def get_object_by_task_and_edu_id(self,
+                                            task_id,
                                             edu_id,
                                             session: AsyncSession):
         query = (
