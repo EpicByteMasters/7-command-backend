@@ -12,12 +12,11 @@ from app.schemas.ipr import IprsOut
 router = APIRouter()
 
 
-@router.get(  # noqa: C901
-    "/",
-    response_model=list[IprsOut],
-    response_model_exclude_none=True,
-    dependencies=[Depends(current_user)]
-)
+@router.get("/",
+            response_model=list[IprsOut],
+            response_model_exclude_none=True,
+            summary="Получить список подчиненных с их актуальным ИПР",
+            dependencies=[Depends(current_user)])
 async def get_iprs(
     take: int = -1,
     skip: int = 0,

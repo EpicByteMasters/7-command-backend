@@ -86,14 +86,7 @@ class NotificationCRUD(CRUDBase):
             .limit(3)
         )
         result = (await session.execute(query)).unique().scalars().all()
-        # link_id = (
-        #     (await session.execute(
-        #         select(Ipr.id).where(Ipr.employee_id == user.id)
-        #     ))
-        #     .unique()
-        #     .scalars()
-        #     .first()
-        # )
+
         return [
             NotificationGet(
                 title=notification.title,

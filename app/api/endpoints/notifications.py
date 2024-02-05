@@ -10,11 +10,10 @@ from app.schemas.notifications import NotificationGet
 router = APIRouter()
 
 
-@router.get(
-    "/notifications",
-    response_model=list[NotificationGet],
-    dependencies=[Depends(current_user)],
-)
+@router.get("/notifications",
+            response_model=list[NotificationGet],
+            dependencies=[Depends(current_user)],
+            summary="Запрос на последние уведомления")
 async def get_notifications(
     user: User = Depends(current_user),
     session: AsyncSession = Depends(get_async_session),

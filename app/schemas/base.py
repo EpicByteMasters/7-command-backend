@@ -16,17 +16,15 @@ class Base(BaseModel):
     def get_properties(cls):
         return [prop for prop in dir(cls) if isinstance(getattr(cls, prop), property) and prop not in ("__values__", "fields")]
 
-    def dict(
-        self,
-        *,
-        include=None,
-        exclude=None,
-        by_alias: bool = False,
-        skip_defaults: bool = None,
-        exclude_unset: bool = False,
-        exclude_defaults: bool = False,
-        exclude_none: bool = False,
-    ):
+    def dict(self,
+             *,
+             include=None,
+             exclude=None,
+             by_alias: bool = False,
+             skip_defaults: bool = None,
+             exclude_unset: bool = False,
+             exclude_defaults: bool = False,
+             exclude_none: bool = False):
 
         attribs = super().dict(
             include=include,

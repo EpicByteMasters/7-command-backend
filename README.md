@@ -19,6 +19,7 @@
 
 ## О команде
 
+### Backend
 - Николай Рудаков - Team-lead - [@NikoayR](https://t.me/NikoayR)
 - Полина Горшкова - [@pgorshkova](https://t.me/pgorshkova)
 - Кирилл Собковский - [@sobiyk](https://t.me/sobiyk)
