@@ -51,7 +51,7 @@ async def get_iprs(
                 if r_task.task_status_id == "COMPLETED":
                     task_completed += 1
             if ipr.close_date:
-                r_date = ipr.close_date.strftime("%d-%m-%Y")
+                r_date = ipr.close_date.strftime("%Y-%m-%d")
             else:
                 r_date = None
             if (statusipr is None) or (statusipr == ipr.ipr_status_id):
