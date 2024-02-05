@@ -19,5 +19,6 @@ async def get_notifications(
     user: User = Depends(current_user),
     session: AsyncSession = Depends(get_async_session),
 ):
-    notifications = await notification_crud.get_user_notifications(user, session)
+    notifications = await notification_crud.get_user_notifications(user,
+                                                                   session)
     return notifications
