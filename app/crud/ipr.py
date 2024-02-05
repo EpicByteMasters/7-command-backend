@@ -150,7 +150,7 @@ class IPRCrud(CRUDBase):
                 .where(
                     self.model.is_deleted == False,  # noqa
                     self.model.mentor_id == user.id,
-                    self.model.ipr_status == statusipr,
+                    self.model.ipr_status_id == "IN_PROGRESS"
                 )
                 .offset(skip)
                 .limit(take)
@@ -161,6 +161,7 @@ class IPRCrud(CRUDBase):
                 .where(
                     self.model.is_deleted == False,  # noqa
                     self.model.mentor_id == user.id,
+                    self.model.ipr_status_id == "IN_PROGRESS"
                 )
                 .offset(skip)
                 .limit(take)
