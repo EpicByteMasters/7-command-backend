@@ -2,7 +2,7 @@ from datetime import date
 from http import HTTPStatus
 from typing import Optional
 
-from sqlalchemy import and_, desc, select
+from sqlalchemy import and_, desc, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException
 
@@ -52,11 +52,12 @@ class IPRCrud(CRUDBase):
         return all_objects.unique().scalars().all()
 
     async def get_last_users_ipr(self, user: User, session: AsyncSession):
-        query_draft = (
+        query_draft_progress = (
             select(Ipr).where(
                 Ipr.is_deleted == False,  # noqa
                 Ipr.employee_id == user.id,
-                Ipr.ipr_status_id == "DRAFT"
+                or_(Ipr.ipr_status_id == "DRAFT",
+                    Ipr.ipr_status_id == "IN_PROGRESS")
             )
         )
         query_if_no_draft = (
@@ -69,10 +70,10 @@ class IPRCrud(CRUDBase):
             .limit(1)
         )
 
-        draft = await session.execute(query_draft)
-        draft = draft.scalar()
-        if draft:
-            return draft
+        draft_progress = await session.execute(query_draft_progress)
+        draft_progress = draft_progress.scalar()
+        if draft_progress:
+            return draft_progress
         all_objects = await session.execute(query_if_no_draft)
         if not all_objects:
             return None

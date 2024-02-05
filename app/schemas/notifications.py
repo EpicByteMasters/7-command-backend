@@ -1,26 +1,29 @@
 from datetime import date
 
-from pydantic import BaseModel
+from app.schemas.base import AllOptional, Base
 
 
-class NotificationGet(BaseModel):
+class NotificationGet(Base, metaclass=AllOptional):
     title: str
-    briefText: str
+    brief_text: str
+    button_text: str
     date: date
     url: str
 
 
-class NotificationAddDB(BaseModel):
+class NotificationAddDB(Base):
     title: str
-    briefText: str
+    brief_text: str
+    button_text: str
     date: date
     url: str
     user_id: int
 
 
-class NotificationAddDB(BaseModel):
+class NotificationAddDB(Base):
     title: str
-    briefText: str
+    brief_text: str
+    button_text: str
     date: date
     url: str
     user_id: int

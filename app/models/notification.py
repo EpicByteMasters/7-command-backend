@@ -6,7 +6,8 @@ from app.core.db import Base
 
 class Notification(Base):
     title = Column(Text(256), nullable=True)
-    briefText = Column(Text(256), nullable=True)
+    brief_text = Column(Text(256), nullable=True)
+    button_text = Column(Text(64), nullable=True)
     date = Column(Date, nullable=True)
     ipr_id = Column(Integer, ForeignKey("ipr.id"), default=0)
     ipr = relationship("Ipr", back_populates="notifications")
