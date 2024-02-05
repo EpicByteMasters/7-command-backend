@@ -1,3 +1,4 @@
+from http import HTTPStatus
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -65,5 +66,9 @@ async def get_iprs(
         total_count += 1
 
     return JSONResponse(
-        status_code=200, content={"employees": resalt, "totalCount": total_count}
+        status_code=HTTPStatus.OK,
+        content={
+            "employees": resalt,
+            "totalCount": total_count
+        }
     )

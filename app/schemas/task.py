@@ -25,7 +25,7 @@ class EduTaskCreate(BaseModel):
 class EducationOut(BaseOut):
     id: int
     name: str
-    url_link: str
+    url_link: Optional[str]
 
 
 class EduTaskOut(BaseOut):
