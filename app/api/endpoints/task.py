@@ -35,7 +35,7 @@ async def patch_task_complete(
     ipr = await ipr_crud.get_ipr_by_id(task.ipr_id, session)
     notification_supervisor = Notification(
         title="Задача выполнена",
-        briefText="Сотрудник выполнил задачу. Пожалуйста, ознакомьтесь с результатом.",
+        brief_text="Сотрудник выполнил задачу. Пожалуйста, ознакомьтесь с результатом.",
         date=date.today(),
         ipr_id=ipr.id,
         user_id=ipr.supervisor_id,
@@ -48,7 +48,7 @@ async def patch_task_complete(
     if ipr.mentor_id:
         notification_mentor = Notification(
             title="Задача выполнена",
-            briefText="Сотрудник выполнил задачу. Пожалуйста, ознакомьтесь с результатом.",
+            brief_text="Сотрудник выполнил задачу. Пожалуйста, ознакомьтесь с результатом.",
             date=date.today(),
             ipr_id=ipr.id,
             user_id=ipr.mentor_id,
