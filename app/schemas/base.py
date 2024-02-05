@@ -1,6 +1,7 @@
 from typing import Optional
-from pydantic import BaseModel
+
 import pydantic
+from pydantic import BaseModel
 
 from .utils import to_camel
 
@@ -15,17 +16,15 @@ class Base(BaseModel):
     def get_properties(cls):
         return [prop for prop in dir(cls) if isinstance(getattr(cls, prop), property) and prop not in ("__values__", "fields")]
 
-    def dict(
-        self,
-        *,
-        include=None,
-        exclude=None,
-        by_alias: bool = False,
-        skip_defaults: bool = None,
-        exclude_unset: bool = False,
-        exclude_defaults: bool = False,
-        exclude_none: bool = False,
-    ):
+    def dict(self,
+             *,
+             include=None,
+             exclude=None,
+             by_alias: bool = False,
+             skip_defaults: bool = None,
+             exclude_unset: bool = False,
+             exclude_defaults: bool = False,
+             exclude_none: bool = False):
 
         attribs = super().dict(
             include=include,
@@ -57,11 +56,11 @@ class BaseOut(Base):
 
 class AllOptional(pydantic.main.ModelMetaclass):
     def __new__(cls, name, bases, namespaces, **kwargs):
-        annotations = namespaces.get('__annotations__', {})
+        annotations = namespaces.get("__annotations__", {})
         for base in bases:
             annotations.update(base.__annotations__)
         for field in annotations:
             if not field.startswith('__'):
                 annotations[field] = Optional[annotations[field]]
-        namespaces['__annotations__'] = annotations
+        namespaces["__annotations__"] = annotations
         return super().__new__(cls, name, bases, namespaces, **kwargs)

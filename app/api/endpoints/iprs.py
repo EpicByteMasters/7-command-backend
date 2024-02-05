@@ -4,20 +4,19 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.db import get_async_session
-from app.crud import ipr_crud, user_crud, task_crud
 from app.core.user import current_user
+from app.crud import ipr_crud, task_crud, user_crud
 from app.models.user import User
 from app.schemas.ipr import IprsOut
 
 router = APIRouter()
 
 
-@router.get(
-    "/",
-    response_model=list[IprsOut],
-    response_model_exclude_none=True,
-    dependencies=[Depends(current_user)]
-)
+@router.get("/",
+            response_model=list[IprsOut],
+            response_model_exclude_none=True,
+            summary="Получить список подчиненных с их актуальным ИПР",
+            dependencies=[Depends(current_user)])
 async def get_iprs(
     take: int = -1,
     skip: int = 0,

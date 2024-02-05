@@ -1,9 +1,10 @@
 import datetime
 
-from sqlalchemy import select, and_, not_
+from sqlalchemy import and_, not_, select
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.crud.base import CRUDBase
-from app.models import User, Notification, Ipr, Task
+from app.models import Ipr, Notification, Task, User
 from app.schemas.notifications import NotificationGet
 
 
@@ -85,14 +86,7 @@ class NotificationCRUD(CRUDBase):
             .limit(3)
         )
         result = (await session.execute(query)).unique().scalars().all()
-        # link_id = (
-        #     (await session.execute(
-        #         select(Ipr.id).where(Ipr.employee_id == user.id)
-        #     ))
-        #     .unique()
-        #     .scalars()
-        #     .first()
-        # )
+
         return [
             NotificationGet(
                 title=notification.title,

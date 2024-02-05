@@ -3,8 +3,13 @@ from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, Response
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import APIRouter, Depends
 
+from app.api.utils import (
+    add_competencies,
+    update_task_employee,
+    update_tasks,
+    demote_user_as_mentor
+)
 from app.api.validators import (
     check_current_user_is_employees_supervisor,
     check_ipr_is_draft,
@@ -15,12 +20,6 @@ from app.api.validators import (
     check_user_is_supervisor,
     check_user_is_ipr_mentor_or_supervisor,
     check_ipr_is_in_progress,
-)
-from app.api.utils import (
-    add_competencies,
-    update_task_employee,
-    update_tasks,
-    demote_user_as_mentor
 )
 from app.core.db import get_async_session
 from app.core.user import current_user
@@ -41,7 +40,6 @@ from app.schemas.ipr import (
     IprUpdateSupervisorIn
 )
 
-
 router = APIRouter()
 
 
@@ -50,8 +48,7 @@ router = APIRouter()
              response_model_exclude_none=True,
              status_code=HTTPStatus.CREATED,
              dependencies=[Depends(current_user)],
-             summary='Создать черновик руководителем',
-             tags=['ИПР'])
+             summary="Создать черновик руководителем")
 async def create_new_ipr(draft_ipr: IPRDraftCreate,
                          session: AsyncSession = Depends(get_async_session),
                          user: User = Depends(current_user)):
@@ -70,7 +67,7 @@ async def create_new_ipr(draft_ipr: IPRDraftCreate,
             response_model_exclude_none=True,
             status_code=HTTPStatus.OK,
             dependencies=[Depends(current_user)],
-            tags=["ИПР"])
+            summary="Получить историю своих ИПР")
 async def get_my_iprs(user: User = Depends(current_user),
                       session: AsyncSession = Depends(get_async_session)):
     iprs = await ipr_crud.get_users_ipr(user, session)
@@ -81,6 +78,7 @@ async def get_my_iprs(user: User = Depends(current_user),
             response_model=list[IprListSupervisorOut],
             response_model_exclude_none=True,
             status_code=HTTPStatus.OK,
+            summary="Получить историю ИПР сотрудника",
             dependencies=[Depends(current_user)])
 async def get_users_iprs(employee_id: int,
                          user: User = Depends(current_user),
@@ -95,8 +93,7 @@ async def get_users_iprs(employee_id: int,
               response_model=IPRDraftOut,
               response_model_exclude_none=True,
               status_code=HTTPStatus.OK,
-              summary='Сохранить черновик',
-              tags=['ИПР'])
+              summary='Сохранить черновик')
 async def save_draft(ipr_id: int,
                      draft_data_in: IPRDraftIn,
                      user: User = Depends(current_user),
@@ -119,8 +116,8 @@ async def save_draft(ipr_id: int,
 @router.get('/{ipr_id}/supervisor',
             response_model=IPRSupervisorOut,
             response_model_exclude_none=True,
-            tags=['ИПР'],
             status_code=HTTPStatus.OK,
+            summary="Получить ИПР по id от лица руководителя",
             dependencies=[Depends(current_user)])
 async def get_ipr_by_supervisor(ipr_id: int,
                                 user: User = Depends(current_user),
@@ -130,11 +127,11 @@ async def get_ipr_by_supervisor(ipr_id: int,
     return ipr
 
 
-@router.get('/{ipr_id}/employee',
+@router.get("/{ipr_id}/employee",
             response_model=IPREmployeeOut,
             response_model_exclude_none=True,
-            tags=['ИПР'],
             status_code=HTTPStatus.OK,
+            summary="Получить ИПР по id от лица сотрудника",
             dependencies=[Depends(current_user)])
 async def get_ipr_employee(ipr_id: int,
                            user: User = Depends(current_user),
@@ -149,8 +146,7 @@ async def get_ipr_employee(ipr_id: int,
               response_model_exclude_none=True,
               dependencies=[Depends(current_user)],
               status_code=HTTPStatus.OK,
-              summary="Редактировать ИПР руководителем",
-              tags=['ИПР'])
+              summary="Редактировать ИПР от лица руководителя")
 async def edit_ipr_by_supervisor(ipr_id: int,
                                  update_data_in: IprUpdateSupervisorIn,
                                  user: User = Depends(current_user),
@@ -186,8 +182,7 @@ async def edit_ipr_by_supervisor(ipr_id: int,
               response_model_exclude_none=False,
               dependencies=[Depends(current_user)],
               status_code=HTTPStatus.OK,
-              summary="Редактировать ИПР сотрудником",
-              tags=['ИПР'])
+              summary="Редактировать ИПР от сотрудника")
 async def edit_ipr_by_employee(ipr_id: int,
                                update_data_in: IprUpdateEmployeeIn,
                                user: User = Depends(current_user),
@@ -205,7 +200,7 @@ async def edit_ipr_by_employee(ipr_id: int,
               response_model_exclude_none=False,
               dependencies=[Depends(current_user)],
               status_code=HTTPStatus.OK,
-              tags=['ИПР'])
+              summary="Перевести ИПР в работу")
 async def start_ipr(ipr_id: int,
                     update_data_in: IprUpdateSupervisorIn,
                     user: User = Depends(current_user),
@@ -249,7 +244,7 @@ async def start_ipr(ipr_id: int,
               response_model_exclude_none=True,
               dependencies=[Depends(current_user)],
               status_code=HTTPStatus.OK,
-              tags=["ИПР"])
+              summary="Отменить выполнение ИПР")
 async def cancel_ipr(ipr_id=int,
                      user: User = Depends(current_user),
                      session: AsyncSession = Depends(get_async_session)):
@@ -264,12 +259,10 @@ async def cancel_ipr(ipr_id=int,
 
 @router.patch("/{ipr_id}/delete",
               dependencies=[Depends(current_user)],
-              tags=["ИПР"])
-async def remove_ipr(
-    ipr_id: int,
-    user: User = Depends(current_user),
-    session: AsyncSession = Depends(get_async_session),
-):
+              summary="Удалить ИПР")
+async def remove_ipr(ipr_id: int,
+                     user: User = Depends(current_user),
+                     session: AsyncSession = Depends(get_async_session)):
     ipr = await ipr_crud.check_ipr_exists(ipr_id, session)
     check_ipr_is_draft(ipr)
     check_user_is_ipr_supervisor(ipr, user)
@@ -279,17 +272,16 @@ async def remove_ipr(
     return Response(status_code=HTTPStatus.NO_CONTENT)
 
 
-@router.patch('/{ipr_id}/complete',
+@router.patch("/{ipr_id}/complete",
               response_model=IPRSupervisorOut,
               response_model_exclude_none=True,
               dependencies=[Depends(current_user)],
               status_code=HTTPStatus.OK,
-              tags=['ИПР'])
+              summary="Завершить ИПР")
 async def ipr_complete(ipr_id: int,
                        ipr_patch: IprComplete,
                        user: User = Depends(current_user),
                        session: AsyncSession = Depends(get_async_session)):
-
     ipr = await ipr_crud.get_ipr_by_id(ipr_id, session)
     check_user_is_ipr_mentor_or_supervisor(ipr, user)
     check_ipr_is_in_progress(ipr)
@@ -297,7 +289,7 @@ async def ipr_complete(ipr_id: int,
 
     notification = Notification(
         title="План развития закрыт",
-        briefText="Руководитель подвёл итог вашему плану развития.",
+        brief_text="Руководитель подвёл итог вашему плану развития",
         date=date.today(),
         button_text="Перейти к плану",
         ipr_id=ipr.id,

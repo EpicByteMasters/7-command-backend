@@ -3,8 +3,8 @@ from http import HTTPStatus
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.api.validators import check_task_exists_in_ipr
 
+from app.api.validators import check_task_exists_in_ipr
 from app.crud import (
     competency_ipr_crud,
     education_crud,
@@ -14,7 +14,7 @@ from app.crud import (
     user_crud,
 )
 from app.models import Ipr
-from app.schemas.task import FileCreate, TaskCreate, EduTaskCreate, TaskUpdate
+from app.schemas.task import FileCreate, TaskCreate, TaskUpdate, EduTaskCreate
 
 
 async def add_competencies(
