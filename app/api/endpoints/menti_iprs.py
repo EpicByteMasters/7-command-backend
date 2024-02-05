@@ -41,7 +41,7 @@ async def get_iprs(take: int = -1,
                 task_completed += 1
         r_user = await user_crud.get(ipr.employee_id, session)
         if ipr.close_date:
-            r_date = ipr.close_date.strftime("%d-%m-%Y")
+            r_date = ipr.close_date.strftime("%Y-%m-%d")
         else:
             r_date = None
         resalt.append(
