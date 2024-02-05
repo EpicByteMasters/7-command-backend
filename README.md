@@ -91,3 +91,9 @@ http://127.0.0.1/docs
 http://127.0.0.1/ReDoc
 ```
 </details> 
+
+### Swager
+[тут](https://disk.yandex.ru/d/31YHHE1pyzYFqA)
+
+### Проект
+[тут](https://disk.yandex.ru/d/_RBimazXLCrktw)
