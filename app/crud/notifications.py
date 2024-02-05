@@ -1,9 +1,10 @@
 import datetime
 
-from sqlalchemy import select, and_, not_
+from sqlalchemy import and_, not_, select
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.crud.base import CRUDBase
-from app.models import User, Notification, Ipr, Task
+from app.models import Ipr, Notification, Task, User
 from app.schemas.notifications import NotificationGet
 
 

@@ -2,12 +2,11 @@ from datetime import date
 from http import HTTPStatus
 from typing import Optional
 
+from fastapi import HTTPException
 from sqlalchemy import and_, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import HTTPException
 
 from app.crud.base import CRUDBase
-from app.schemas.ipr import IprComplete
 from app.models import (
     Competency,
     CompetencyIpr,
@@ -18,6 +17,7 @@ from app.models import (
     User,
 )
 from app.schemas.ipr import CompetencyIprCreate
+from app.schemas.ipr import IprComplete
 
 
 class IPRCrud(CRUDBase):

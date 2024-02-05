@@ -15,7 +15,6 @@ class CRUDUser(CRUDBase):
         )
         ipr = await session.execute(query)
         ipr = ipr.scalar()
-        print(ipr is None, ipr is not None)
         if ipr is None:
             return False
         return True

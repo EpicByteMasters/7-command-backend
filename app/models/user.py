@@ -2,7 +2,6 @@ from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTable
 from sqlalchemy import Boolean, Column, false, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
-
 from app.core.db import Base, BaseWithName
 
 
