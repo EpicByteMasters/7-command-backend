@@ -4,8 +4,8 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.db import get_async_session
-from app.crud import ipr_crud, user_crud, task_crud
 from app.core.user import current_user
+from app.crud import ipr_crud, task_crud, user_crud
 from app.models.user import User
 from app.schemas.ipr import IprsOut
 
