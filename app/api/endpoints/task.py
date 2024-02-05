@@ -61,12 +61,3 @@ async def patch_task_complete(
     await task_crud.patch_task_awaiting_review(id, session)
     return JSONResponse(status_code=HTTPStatus.OK,
                         content={"message": "Задача удалена"})
-
-
-@router.get(
-    "/{id}"
-)
-async def get_task(id: int, session: AsyncSession = Depends(get_async_session)):
-    """Получить задачу по id"""
-    task = await task_crud.get(id, session)
-    return task

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 from .utils import to_camel
@@ -16,7 +18,7 @@ class DocBase(BaseModel):
 class EducationDoc(DocBase):
     id: int
     specialty: str
-    url_link: str
+    url_link: Optional[str]
 
 
 class SpecialtyDoc(DocBase):

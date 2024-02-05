@@ -14,9 +14,11 @@ class NotificationCRUD(CRUDBase):
             and_(
                 Ipr.close_date <= datetime.date.today(),
                 Ipr.ipr_status_id == "IN_PROGRESS",
+                Ipr.employee_id == user.id,
                 not_(
                     Ipr.id.in_(
-                        select(Notification.ipr_id).where(Notification.user_id == user.id)
+                        select(Notification.ipr_id)
+                        .where(Notification.user_id == user.id)
                     )
                 ),
             )
@@ -28,9 +30,10 @@ class NotificationCRUD(CRUDBase):
         for ipr_closed_obj in ipr_closed_objs:
             msg = NotificationGet(
                 title="Истек срок плана развития",
-                briefText="Истек срок плана развития. Руководителю необходимо подвести итоги и оценить достижение цели",
+                brief_text="Руководителю необходимо подвести итоги",
                 date=ipr_closed_obj.close_date,
-                url=f"http://link/{ipr_closed_obj.id}",
+                button_text="Перейти к плану",
+                url=f"/api/v1/mentor/iprs/ipr/{ipr_closed_obj.id}/employee",
             ).dict()
 
             msg.pop("url")
@@ -42,7 +45,7 @@ class NotificationCRUD(CRUDBase):
             await session.refresh(obj)
 
     async def check_task_closed(self, user: User, session: AsyncSession):
-        query_task = select(Task).where(
+        query_task = select(Task).join(Ipr, Ipr.id == Task.ipr_id).where(
             and_(
                 Task.close_date <= datetime.date.today(),
                 not_(
@@ -57,17 +60,18 @@ class NotificationCRUD(CRUDBase):
         task_closed_objs = (
             await session.execute(query_task)
         ).unique().scalars().all()
-        for task_closed_obj in task_closed_objs:
+        for task in task_closed_objs:
             msg = NotificationGet(
                 title="Истек срок задачи",
                 briefText="Истек срок задачи.",
-                date=task_closed_obj.close_date,
-                url=f"http://link/{task_closed_obj.id}",
+                button_text="Перейти к задаче",
+                date=task.close_date
             ).dict()
 
             msg.pop("url")
             msg["user_id"] = user.id
-            msg["task_id"] = task_closed_obj.id
+            msg["task_id"] = task.id
+            msg["url"] = f"/api/v1/mentor/iprs/ipr/{task.ipr_id}/employee"
             obj = Notification(**msg)
             session.add(obj)
             await session.commit()
@@ -76,27 +80,33 @@ class NotificationCRUD(CRUDBase):
     async def get_user_notifications(self, user: User, session: AsyncSession):
         await self.check_ipr_closed(user, session)
         await self.check_task_closed(user, session)
-        query = select(Notification).where(Notification.user_id == user.id)
-        result = (await session.execute(query)).unique().scalars().all()
-        link_id = (
-            (await session.execute(
-                select(Ipr.id).where(Ipr.employee_id == user.id)
-            ))
-            .unique()
-            .scalars()
-            .first()
+        query = (
+            select(Notification)
+            .where(Notification.user_id == user.id)
+            .limit(3)
         )
+        result = (await session.execute(query)).unique().scalars().all()
+        # link_id = (
+        #     (await session.execute(
+        #         select(Ipr.id).where(Ipr.employee_id == user.id)
+        #     ))
+        #     .unique()
+        #     .scalars()
+        #     .first()
+        # )
         return [
             NotificationGet(
                 title=notification.title,
-                briefText=notification.briefText,
+                brief_text=notification.brief_text,
                 date=notification.date,
-                url=f"http://link/{link_id}",
+                url=notification.url,
             )
             for notification in result
         ]
 
-    async def create_notification(self, notification: Notification, session: AsyncSession):
+    async def create_notification(self,
+                                  notification: Notification,
+                                  session: AsyncSession):
         try:
             session.add(notification)
             await session.commit()
