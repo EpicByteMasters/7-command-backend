@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Date, ForeignKey, Integer, Text
+from sqlalchemy import Column, Date, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
 
 from app.core.db import Base
@@ -15,3 +15,4 @@ class Notification(Base):
     user = relationship("User", back_populates="notifications")
     task_id = Column(Integer, ForeignKey("task.id"), default=0)
     task = relationship("Task", back_populates="notifications")
+    url = Column(String(), nullable=True)

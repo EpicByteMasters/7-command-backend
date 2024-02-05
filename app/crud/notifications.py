@@ -13,6 +13,7 @@ class NotificationCRUD(CRUDBase):
             and_(
                 Ipr.close_date <= datetime.date.today(),
                 Ipr.ipr_status_id == "IN_PROGRESS",
+                Ipr.employee_id == user.id,
                 not_(
                     Ipr.id.in_(
                         select(Notification.ipr_id)
@@ -28,9 +29,10 @@ class NotificationCRUD(CRUDBase):
         for ipr_closed_obj in ipr_closed_objs:
             msg = NotificationGet(
                 title="Истек срок плана развития",
-                brief_text="Истек срок плана развития. Руководителю необходимо подвести итоги и оценить достижение цели",
+                brief_text="Руководителю необходимо подвести итоги",
                 date=ipr_closed_obj.close_date,
-                url=f"http://link/{ipr_closed_obj.ipr_id}",
+                button_text="Перейти к плану",
+                url=f"/api/v1/mentor/iprs/ipr/{ipr_closed_obj.id}/employee",
             ).dict()
 
             msg.pop("url")
@@ -57,17 +59,18 @@ class NotificationCRUD(CRUDBase):
         task_closed_objs = (
             await session.execute(query_task)
         ).unique().scalars().all()
-        for task_closed_obj in task_closed_objs:
+        for task in task_closed_objs:
             msg = NotificationGet(
                 title="Истек срок задачи",
                 briefText="Истек срок задачи.",
-                date=task_closed_obj.close_date
+                button_text="Перейти к задаче",
+                date=task.close_date
             ).dict()
 
             msg.pop("url")
             msg["user_id"] = user.id
-            msg["task_id"] = task_closed_obj.id
-            msg["url"] = f"http://link/{task_closed_obj.ipr_id}"
+            msg["task_id"] = task.id
+            msg["url"] = f"/api/v1/mentor/iprs/ipr/{task.ipr_id}/employee"
             obj = Notification(**msg)
             session.add(obj)
             await session.commit()
@@ -82,20 +85,20 @@ class NotificationCRUD(CRUDBase):
             .limit(3)
         )
         result = (await session.execute(query)).unique().scalars().all()
-        link_id = (
-            (await session.execute(
-                select(Ipr.id).where(Ipr.employee_id == user.id)
-            ))
-            .unique()
-            .scalars()
-            .first()
-        )
+        # link_id = (
+        #     (await session.execute(
+        #         select(Ipr.id).where(Ipr.employee_id == user.id)
+        #     ))
+        #     .unique()
+        #     .scalars()
+        #     .first()
+        # )
         return [
             NotificationGet(
                 title=notification.title,
                 brief_text=notification.brief_text,
                 date=notification.date,
-                url=f"http://link/{link_id}",
+                url=notification.url,
             )
             for notification in result
         ]

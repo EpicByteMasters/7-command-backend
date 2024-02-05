@@ -297,8 +297,9 @@ async def ipr_complete(ipr_id: int,
 
     notification = Notification(
         title="План развития закрыт",
-        briefText="Руководитель подвёл итог вашему плану развития. Нажмите, чтобы посмотреть результат.",
+        briefText="Руководитель подвёл итог вашему плану развития.",
         date=date.today(),
+        button_text="Перейти к плану",
         ipr_id=ipr.id,
         user_id=ipr.employee_id,
     )
